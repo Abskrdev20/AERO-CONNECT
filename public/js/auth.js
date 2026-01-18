@@ -10,18 +10,10 @@ let forgotCaptcha = "";
    ON LOAD – GENERATE ALL REQUIRED CAPTCHAS
 ===================================================== */
 window.addEventListener("DOMContentLoaded", function () {
-  if (document.getElementById("userCaptchaCode")) {
-    generateUserCaptcha();
-  }
-  if (document.getElementById("adminCaptchaCode")) {
-    generateAdminCaptcha();
-  }
-  if (document.getElementById("regCaptchaCode")) {
-    generateRegCaptcha();
-  }
-  if (document.getElementById("forgotCaptchaCode")) {
-    generateForgotCaptcha();
-  }
+  if (document.getElementById("userCaptchaCode")) generateUserCaptcha();
+  if (document.getElementById("adminCaptchaCode")) generateAdminCaptcha();
+  if (document.getElementById("regCaptchaCode")) generateRegCaptcha();
+  if (document.getElementById("forgotCaptchaCode")) generateForgotCaptcha();
 });
 
 /* =====================================================
@@ -36,44 +28,28 @@ function generateCaptcha() {
   return code;
 }
 
-/* =====================================================
-   USER CAPTCHA
-===================================================== */
 function generateUserCaptcha() {
   userCaptcha = generateCaptcha();
   document.getElementById("userCaptchaCode").textContent = userCaptcha;
-  const input = document.getElementById("userCaptchaInput");
-  if (input) input.value = "";
+  document.getElementById("userCaptchaInput").value = "";
 }
 
-/* =====================================================
-   ADMIN CAPTCHA
-===================================================== */
 function generateAdminCaptcha() {
   adminCaptcha = generateCaptcha();
   document.getElementById("adminCaptchaCode").textContent = adminCaptcha;
-  const input = document.getElementById("adminCaptchaInput");
-  if (input) input.value = "";
+  document.getElementById("adminCaptchaInput").value = "";
 }
 
-/* =====================================================
-   REGISTER CAPTCHA
-===================================================== */
 function generateRegCaptcha() {
   regCaptcha = generateCaptcha();
   document.getElementById("regCaptchaCode").textContent = regCaptcha;
-  const input = document.getElementById("regCaptchaInput");
-  if (input) input.value = "";
+  document.getElementById("regCaptchaInput").value = "";
 }
 
-/* =====================================================
-   FORGOT PASSWORD CAPTCHA
-===================================================== */
 function generateForgotCaptcha() {
   forgotCaptcha = generateCaptcha();
   document.getElementById("forgotCaptchaCode").textContent = forgotCaptcha;
-  const input = document.getElementById("forgotCaptchaInput");
-  if (input) input.value = "";
+  document.getElementById("forgotCaptchaInput").value = "";
 }
 
 /* =====================================================
@@ -82,7 +58,6 @@ function generateForgotCaptcha() {
 function togglePassword(inputId, button) {
   const input = document.getElementById(inputId);
   const icon = button.querySelector("i");
-
   if (input.type === "password") {
     input.type = "text";
     icon.classList.remove("fa-eye");
@@ -95,7 +70,7 @@ function togglePassword(inputId, button) {
 }
 
 /* =====================================================
-   ROUTING HELPER (REPLACES showPage)
+   ROUTING HELPER
 ===================================================== */
 function go(url) {
   window.location.href = url;
@@ -106,7 +81,6 @@ function go(url) {
 ===================================================== */
 function handleUserLogin(event) {
   event.preventDefault();
-
   const input = document.getElementById("userCaptchaInput").value;
 
   if (input.toUpperCase() !== userCaptcha) {
@@ -115,8 +89,8 @@ function handleUserLogin(event) {
     return;
   }
 
-  alert("User login successful!");
-  // BACKEND AUTH WILL COME HERE
+  // --- REDIRECT TO DASHBOARD ---
+  window.location.href = "/dashboard";
 }
 
 /* =====================================================
@@ -124,7 +98,6 @@ function handleUserLogin(event) {
 ===================================================== */
 function handleAdminLogin(event) {
   event.preventDefault();
-
   const input = document.getElementById("adminCaptchaInput").value;
 
   if (input.toUpperCase() !== adminCaptcha) {
@@ -132,16 +105,15 @@ function handleAdminLogin(event) {
     generateAdminCaptcha();
     return;
   }
-
-  alert("Admin login successful!");
-  // ADMIN DASHBOARD REDIRECT LATER
+  
+  alert("Admin login successful! (Redirecting to Admin Dashboard...)");
+  window.location.href = "/admin/dashboard";
 }
 
 /* =====================================================
    REGISTER HANDLER
 ===================================================== */
-const passwordRegex =
-  /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()_+\[\]{};':"\\|,.<>\/?]).{8,}$/;
+const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()_+\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
 function handleRegister(event) {
   event.preventDefault();
@@ -149,6 +121,7 @@ function handleRegister(event) {
   const password = document.getElementById("regPassword").value;
   const confirmPassword = document.getElementById("regConfirmPassword").value;
   const captchaInput = document.getElementById("regCaptchaInput").value;
+  const position = document.querySelector("select[required]").value; // Get selected position
 
   if (password !== confirmPassword) {
     alert("Passwords do not match!");
@@ -156,9 +129,7 @@ function handleRegister(event) {
   }
 
   if (!passwordRegex.test(password)) {
-    alert(
-      "Password must have minimum 8 characters, 1 uppercase letter, 1 number and 1 special character."
-    );
+    alert("Password must have minimum 8 characters, 1 uppercase letter, 1 number and 1 special character.");
     return;
   }
 
@@ -168,8 +139,10 @@ function handleRegister(event) {
     return;
   }
 
-  alert("Registration successful!");
-  go("/login");
+  // --- REGISTRATION SUCCESS LOGIC ---
+  // Works for ANY position selected
+  alert(`Registration Successful for position: ${position}\nPlease login to continue.`);
+  window.location.href = "/login";
 }
 
 /* =====================================================
@@ -177,7 +150,6 @@ function handleRegister(event) {
 ===================================================== */
 function handleForgotPassword(event) {
   event.preventDefault();
-
   const captchaInput = document.getElementById("forgotCaptchaInput").value;
 
   if (captchaInput.toUpperCase() !== forgotCaptcha) {
@@ -186,6 +158,6 @@ function handleForgotPassword(event) {
     return;
   }
 
-  alert("Password reset link sent!");
+  alert("Password reset link sent to your official email!");
   go("/login");
 }

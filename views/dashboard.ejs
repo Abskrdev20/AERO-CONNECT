@@ -1,0 +1,115 @@
+<% layout('layouts/boilerplate') -%>
+
+<!-- Load Dashboard Specific CSS -->
+<link rel="stylesheet" href="/css/dashboard.css">
+
+<div class="dashboard-container">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="user-profile-widget">
+            <div class="avatar-circle">
+                <%= currentUser.name.charAt(0) %>
+            </div>
+            <h5 class="user-name"><%= currentUser.name %></h5>
+            <p class="user-role"><%= currentUser.designation %></p>
+            <div class="emp-badge">
+                <i class="fas fa-id-badge"></i> <%= currentUser.empId %>
+            </div>
+        </div>
+
+        <nav class="side-nav">
+            <a href="/dashboard" class="nav-item <%= page === 'dashboard' ? 'active' : '' %>">
+                <i class="fas fa-th-large"></i> Overview
+            </a>
+            <a href="/grievances" class="nav-item <%= page === 'grievances' ? 'active' : '' %>">
+                <i class="fas fa-file-signature"></i> Lodge Grievance
+            </a>
+            <a href="/profile" class="nav-item <%= page === 'profile' ? 'active' : '' %>">
+                <i class="fas fa-user-cog"></i> My Profile
+            </a>
+            <div class="nav-divider"></div>
+            <a href="/logout" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+        
+        <!-- Welcome Header -->
+        <header class="content-header">
+            <div>
+                <h1>Dashboard Overview</h1>
+                <p class="text-muted">Track, manage, and resolve your workplace concerns.</p>
+            </div>
+            <button class="btn btn-primary-custom" onclick="window.location.href='/grievances'">
+                <i class="fas fa-plus-circle me-2"></i> New Grievance
+            </button>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-box blue">
+                <div class="stat-icon"><i class="fas fa-folder-open"></i></div>
+                <div class="stat-info">
+                    <h3><%= currentUser.stats.total %></h3>
+                    <p>Total Filed</p>
+                </div>
+            </div>
+            <div class="stat-box orange">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div class="stat-info">
+                    <h3><%= currentUser.stats.pending %></h3>
+                    <p>Pending Review</p>
+                </div>
+            </div>
+            <div class="stat-box green">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-info">
+                    <h3><%= currentUser.stats.resolved %></h3>
+                    <p>Resolved</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity-section">
+            <h4 class="section-title"><i class="fas fa-history me-2"></i>Recent Applications</h4>
+            
+            <div class="table-container">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Grievance ID</th>
+                            <th>Category</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Mock Data Row 1 -->
+                        <tr>
+                            <td class="fw-bold text-primary">#GRV-2025-001</td>
+                            <td>Workplace Safety</td>
+                            <td>15 Jan 2026</td>
+                            <td><span class="status-badge pending">Pending</span></td>
+                            <td><button class="btn-sm btn-view">View</button></td>
+                        </tr>
+                        <!-- Mock Data Row 2 -->
+                        <tr>
+                            <td class="fw-bold text-primary">#GRV-2024-890</td>
+                            <td>Leave Allowance</td>
+                            <td>20 Dec 2025</td>
+                            <td><span class="status-badge resolved">Resolved</span></td>
+                            <td><button class="btn-sm btn-view">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>

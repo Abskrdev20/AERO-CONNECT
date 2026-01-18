@@ -1,0 +1,352 @@
+<% layout('layouts/boilerplate') -%>
+
+<!-- Load Dashboard & Grievance Specific CSS -->
+<link rel="stylesheet" href="/css/dashboard.css">
+<link rel="stylesheet" href="/css/grievances.css">
+<!-- Load Quill CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.css" rel="stylesheet">
+
+<div class="dashboard-container">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="user-profile-widget">
+            <div class="avatar-circle">
+                <%= currentUser.name.charAt(0) %>
+            </div>
+            <h5 class="user-name"><%= currentUser.name %></h5>
+            <p class="user-role"><%= currentUser.designation %></p>
+            <div class="emp-badge">
+                <i class="fas fa-id-badge"></i> <%= currentUser.empId %>
+            </div>
+        </div>
+
+        <nav class="side-nav">
+            <a href="/dashboard" class="nav-item <%= page === 'dashboard' ? 'active' : '' %>">
+                <i class="fas fa-th-large"></i> Overview
+            </a>
+            <a href="/grievances" class="nav-item <%= page === 'grievances' ? 'active' : '' %>">
+                <i class="fas fa-file-signature"></i> Lodge Grievance
+            </a>
+            <a href="/profile" class="nav-item <%= page === 'profile' ? 'active' : '' %>">
+                <i class="fas fa-user-cog"></i> My Profile
+            </a>
+            <div class="nav-divider"></div>
+            <a href="/logout" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+        
+        <div class="complaint-container">
+            <div class="complaint-card card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom py-4 text-center">
+                    <h2 class="fw-bold text-dark"><i class="fas fa-file-alt me-2" style="color: #003d82;"></i>File New Complaint</h2>
+                    <p class="text-muted mb-0">Submit your workplace concern or grievance</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    
+                    <!-- User Information Display (Read-only) -->
+                    <div class="user-info-display">
+                        <h5 style="color: #003d82; margin-bottom: 1rem;">Complainant Information</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <span class="info-label">Full Name</span>
+                                <span class="info-value"><%= currentUser.name %></span>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="info-label">Employee ID</span>
+                                <span class="info-value"><%= currentUser.empId %></span>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="info-label">Email</span>
+                                <span class="info-value"><%= currentUser.email %></span>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="info-label">Department</span>
+                                <span class="info-value"><%= currentUser.department %></span>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="info-label">Designation</span>
+                                <span class="info-value"><%= currentUser.designation %></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="complaintForm" action="/complaints/submit" method="POST" enctype="multipart/form-data">
+                        <!-- Hidden fields -->
+                        <input type="hidden" name="empId" value="<%= currentUser.empId %>">
+                        
+                        <!-- Complaint Details Section -->
+                        <div class="mb-5 pb-4 border-bottom">
+                            <h5 class="text-primary fw-bold mb-4" style="color: #003d82 !important;">Complaint Details</h5>
+                            
+                            <div class="mb-4">
+                                <label for="category" class="form-label fw-bold">Complaint Category <span class="text-danger">*</span></label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="">-- Select Category --</option>
+                                    <option value="baggage">Baggage Issues</option>
+                                    <option value="staff">Staff Behaviour</option>
+                                    <option value="facility">Facility Problems</option>
+                                    <option value="security">Security Concerns</option>
+                                    <option value="cleanliness">Cleanliness</option>
+                                    <option value="accessibility">Accessibility</option>
+                                    <option value="equipment">Equipment/Infrastructure</option>
+                                    <option value="harassment">Harassment/Discrimination</option>
+                                    <option value="safety">Safety Violations</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="subject" class="form-label fw-bold">Subject <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="subject" name="subject" maxlength="200" required>
+                                <div class="char-count"><span id="subjectCount">0</span>/200</div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="incidentDate" class="form-label fw-bold">Incident Date</label>
+                                    <input type="date" class="form-control" id="incidentDate" name="incidentDate">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="incidentTime" class="form-label fw-bold">Incident Time</label>
+                                    <input type="time" class="form-control" id="incidentTime" name="incidentTime">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="location" class="form-label fw-bold">Location (Office)</label>
+                                <input type="text" class="form-control" id="location" name="location" placeholder="e.g., Building A, Floor 3, Room 305">
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="priority" class="form-label fw-bold">Priority/Urgency Level <span class="text-danger">*</span></label>
+                                <select class="form-select" id="priority" name="priority" required>
+                                    <option value="">-- Select Priority --</option>
+                                    <option value="low">Low - Can wait for resolution</option>
+                                    <option value="medium">Medium - Needs attention soon</option>
+                                    <option value="high">High - Urgent, requires immediate action</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Detailed Description <span class="text-danger">*</span></label>
+                                <!-- Quill Container -->
+                                <div id="editor"></div>
+                                <!-- Hidden input to store Quill data -->
+                                <input type="hidden" id="description" name="description">
+                            </div>
+                        </div>
+
+                        <!-- File Attachments Section -->
+                        <div class="mb-5 pb-4 border-bottom">
+                            <h5 class="text-primary fw-bold mb-3" style="color: #003d82 !important;">Attachments</h5>
+                            <div class="file-upload-area" id="fileUploadArea">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: #003d82;"></i>
+                                <p class="mb-1"><strong>Drag & drop files here or click to browse</strong></p>
+                                <p class="text-muted small">Supported: JPG, PNG, PDF, DOC, DOCX (Max 5MB)</p>
+                                <input type="file" id="fileInput" name="attachments" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" style="display: none;">
+                            </div>
+                            <div class="file-list" id="fileList"></div>
+                        </div>
+
+                        <!-- Contact Preference Section -->
+                        <div class="mb-5 pb-4 border-bottom">
+                            <h5 class="text-primary fw-bold mb-3" style="color: #003d82 !important;">Contact Preferences</h5>
+                            <p class="text-muted mb-3 small">How would you like to be contacted regarding this complaint?</p>
+                            
+                            <div class="contact-preferences">
+                                <div class="contact-option">
+                                    <div class="contact-checkbox">
+                                        <input type="checkbox" id="prefEmail" name="contactPreference" value="email" checked>
+                                        <label for="prefEmail">
+                                            <i class="fas fa-envelope"></i> Email
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="contact-option">
+                                    <div class="contact-checkbox">
+                                        <input type="checkbox" id="prefSMS" name="contactPreference" value="sms">
+                                        <label for="prefSMS">
+                                            <i class="fas fa-sms"></i> SMS
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="contact-option">
+                                    <div class="contact-checkbox">
+                                        <input type="checkbox" id="prefPhone" name="contactPreference" value="phone">
+                                        <label for="prefPhone">
+                                            <i class="fas fa-phone"></i> Phone
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-3">
+                            <button type="button" class="btn btn-secondary" id="saveDraftBtn" style="padding: 10px 24px;">
+                                <i class="fas fa-save me-2"></i>Save as Draft
+                            </button>
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1" style="background-color: #003d82; color: white;">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Complaint
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Scripts for Quill and File Upload -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Quill editor
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    ['link'],
+                    ['clean']
+                ]
+            },
+            placeholder: 'Please provide a detailed description of your complaint...'
+        });
+
+        // Sync Quill content to hidden input
+        quill.on('text-change', function() {
+            document.querySelector('input[name=description]').value = quill.root.innerHTML;
+        });
+
+        // File handling Logic
+        const fileInput = document.getElementById('fileInput');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileList = document.getElementById('fileList');
+        let attachedFiles = [];
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+        fileUploadArea.addEventListener('click', () => fileInput.click());
+
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.size > MAX_FILE_SIZE) {
+                    alert(`File "${file.name}" exceeds 5MB size limit`);
+                    return;
+                }
+                
+                const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert(`File "${file.name}" has unsupported format`);
+                    return;
+                }
+
+                // Avoid duplicates
+                if (attachedFiles.some(f => f.name === file.name)) return;
+
+                attachedFiles.push(file);
+                displayFile(file);
+            });
+        }
+
+        function displayFile(file) {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.dataset.filename = file.name;
+            
+            const fileIcon = getFileIcon(file.type);
+            const fileSize = formatFileSize(file.size);
+            
+            fileItem.innerHTML = `
+                <div class="file-info">
+                    <i class="${fileIcon} file-icon"></i>
+                    <div>
+                        <div style="font-weight:600; font-size:0.9rem;">${file.name}</div>
+                        <small class="text-muted">${fileSize}</small>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm text-danger remove-file-btn border-0">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            fileList.appendChild(fileItem);
+            
+            fileItem.querySelector('.remove-file-btn').addEventListener('click', function() {
+                removeFile(file.name);
+            });
+        }
+
+        function getFileIcon(type) {
+            if (type.startsWith('image/')) return 'fas fa-file-image';
+            if (type === 'application/pdf') return 'fas fa-file-pdf';
+            if (type.includes('word')) return 'fas fa-file-word';
+            return 'fas fa-file';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function removeFile(fileName) {
+            const index = attachedFiles.findIndex(f => f.name === fileName);
+            if (index > -1) {
+                attachedFiles.splice(index, 1);
+                const fileItem = fileList.querySelector(`[data-filename="${fileName}"]`);
+                if (fileItem) fileItem.remove();
+            }
+        }
+
+        // Character counter
+        const subjectInput = document.getElementById('subject');
+        const subjectCount = document.getElementById('subjectCount');
+        
+        subjectInput.addEventListener('input', function() {
+            subjectCount.textContent = this.value.length;
+        });
+        
+        // Form Submission
+        document.getElementById('complaintForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Ensure description from Quill is in the hidden input
+            document.querySelector('input[name=description]').value = quill.root.innerHTML;
+            alert('Grievance submitted successfully!');
+            // window.location.href = '/dashboard';
+        });
+    });
+</script>

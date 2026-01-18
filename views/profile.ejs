@@ -1,0 +1,51 @@
+<% layout('layouts/boilerplate') -%>
+<link rel="stylesheet" href="/css/dashboard.css">
+
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="user-profile-widget">
+            <div class="avatar-circle"><%= currentUser.name.charAt(0) %></div>
+            <h5 class="user-name"><%= currentUser.name %></h5>
+            <p class="user-role"><%= currentUser.designation %></p>
+        </div>
+        <nav class="side-nav">
+            <a href="/dashboard" class="nav-item"><i class="fas fa-th-large"></i> Overview</a>
+            <a href="/grievances" class="nav-item"><i class="fas fa-file-signature"></i> Lodge Grievance</a>
+            <a href="/profile" class="nav-item active"><i class="fas fa-user-cog"></i> My Profile</a>
+            <div class="nav-divider"></div>
+            <a href="/logout" class="nav-item logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="content-header">
+            <div>
+                <h1>My Profile</h1>
+                <p class="text-muted">View and edit your personal details.</p>
+            </div>
+        </header>
+        
+        <div class="card p-4 shadow-sm border-0">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold text-muted small">Full Name</label>
+                    <p class="fs-5"><%= currentUser.name %></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold text-muted small">Employee ID</label>
+                    <p class="fs-5"><%= currentUser.empId %></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold text-muted small">Official Email</label>
+                    <p class="fs-5"><%= currentUser.email %></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold text-muted small">Department</label>
+                    <p class="fs-5"><%= currentUser.department %></p>
+                </div>
+            </div>
+            <hr>
+            <button class="btn btn-outline-primary" style="width: fit-content;">Edit Details</button>
+        </div>
+    </main>
+</div>
