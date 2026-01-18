@@ -1,0 +1,127 @@
+<% layout("layouts/boilerplate") %>
+
+<!-- ================= ADMIN LOGIN PAGE ================= -->
+<div id="admin-login-page" class="page-container active">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-circle admin-logo">
+          <i class="fas fa-user-shield"></i>
+        </div>
+        <h2 class="admin-title">Admin Console</h2>
+        <p>Airports Authority of India</p>
+        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 5px;">
+          Restricted Access Portal
+        </p>
+      </div>
+
+      <div class="card-content">
+        <div class="login-selector">
+          <div class="login-type-btn" onclick="go('/login')">
+            <i class="fas fa-user me-1"></i>Employee
+          </div>
+          <div class="login-type-btn admin-active">
+            <i class="fas fa-user-shield me-1"></i>Administrator
+          </div>
+        </div>
+
+        <div class="official-notice">
+          <i class="fas fa-exclamation-circle me-2"></i>
+          <strong>Official Registration:</strong>
+          Only authorized AAI employees, interns, and apprentices can register.
+          Providing false information may lead to disciplinary action.
+        </div>
+
+        <form onsubmit="handleAdminLogin(event)">
+          <div class="mb-3">
+            <label class="form-label">
+              Admin ID <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-id-badge"></i>
+              </span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Admin identifier"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Password <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group has-toggle">
+              <span class="input-group-text">
+                <i class="fas fa-key"></i>
+              </span>
+              <input
+                type="password"
+                class="form-control"
+                id="adminLoginPassword"
+                placeholder="Enter secure password"
+                required
+              >
+              <button
+                type="button"
+                class="password-toggle"
+                onclick="togglePassword('adminLoginPassword', this)"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Security Verification <span class="required-asterisk">*</span>
+            </label>
+            <div class="captcha-wrapper">
+              <div class="captcha-visual">
+                <div class="captcha-display" id="adminCaptchaCode"></div>
+                <button
+                  type="button"
+                  class="refresh-btn"
+                  onclick="generateAdminCaptcha()"
+                >
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-shield-alt"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="adminCaptchaInput"
+                  placeholder="Enter code shown above"
+                  required
+                >
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-auth admin-btn">
+            Access Dashboard
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <p>
+            <a href="/forgot-password">Trouble logging in?</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function go(url) {
+    window.location.href = url;
+  }
+</script>

@@ -1,0 +1,106 @@
+<% layout("layouts/boilerplate") %>
+
+<!-- ================= FORGOT PASSWORD PAGE ================= -->
+<div id="forgot-password-page" class="page-container active">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-circle">
+          <i class="fas fa-unlock-alt"></i>
+        </div>
+        <h2>Reset Access</h2>
+        <p>Airports Authority of India</p>
+      </div>
+
+      <div class="card-content">
+        <div
+          class="official-notice"
+          style="
+            background: #e3f2fd;
+            border-left-color: var(--secondary-blue);
+            color: var(--primary-blue);
+          "
+        >
+          <i class="fas fa-info-circle me-2"></i>
+          Enter your credentials to receive a password reset link on your official email.
+        </div>
+
+        <form onsubmit="handleForgotPassword(event)">
+          <div class="mb-3">
+            <label class="form-label">
+              Registered Email <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <input
+                type="email"
+                class="form-control"
+                placeholder="name@aai.aero"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Employee ID <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-id-card"></i>
+              </span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Your EMP ID"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Security Verification <span class="required-asterisk">*</span>
+            </label>
+            <div class="captcha-wrapper">
+              <div class="captcha-visual">
+                <div class="captcha-display" id="forgotCaptchaCode"></div>
+                <button
+                  type="button"
+                  class="refresh-btn"
+                  onclick="generateForgotCaptcha()"
+                >
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-shield-alt"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="forgotCaptchaInput"
+                  placeholder="Enter code"
+                  required
+                >
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-auth">
+            Send Reset Link
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <p>
+            <a href="/login">← Back to Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

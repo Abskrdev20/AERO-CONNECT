@@ -1,0 +1,245 @@
+<% layout("layouts/boilerplate") %>
+
+<!-- ================= REGISTER PAGE ================= -->
+<div id="register-page" class="page-container active">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-circle">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <h2>New Registration</h2>
+        <p>Airports Authority of India</p>
+      </div>
+
+      <div class="card-content">
+        <div class="official-notice">
+          <i class="fas fa-exclamation-circle me-2"></i>
+          <strong>Official Registration:</strong>
+          Only authorized AAI employees, interns, and apprentices can register.
+          Providing false information may lead to disciplinary action.
+        </div>
+
+        <form onsubmit="handleRegister(event)">
+          <div class="mb-3">
+            <label class="form-label">
+              Full Name <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-user"></i>
+              </span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Full Name"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Employee ID <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-id-card"></i>
+              </span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="EMP ID"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Official Email <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <input
+                type="email"
+                class="form-control"
+                placeholder="name@aai.aero"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Mobile Number <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-phone"></i>
+              </span>
+              <input
+                type="tel"
+                class="form-control"
+                placeholder="10-digit number"
+                pattern="[0-9]{10}"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Position <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-briefcase"></i>
+              </span>
+              <select class="form-select" required>
+                <option value="">Select...</option>
+                <option value="senior_engineer">Sr. Engineer</option>
+                <option value="junior_engineer">Jr. Engineer</option>
+                <option value="assistant_engineer">Asst. Engineer</option>
+                <option value="technician">Technician</option>
+                <option value="intern">Intern</option>
+                <option value="apprentice">Apprentice</option>
+                <option value="permanent_staff">Permanent</option>
+                <option value="contract_staff">Contract</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Department <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-building"></i>
+              </span>
+              <select class="form-select" required>
+                <option value="">Select...</option>
+                <option value="administration">Admin</option>
+                <option value="hr">HR</option>
+                <option value="it">IT</option>
+                <option value="engineering">Engg</option>
+                <option value="operations">Ops</option>
+                <option value="safety">Safety</option>
+                <option value="atc">ATC</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Password <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group has-toggle">
+              <span class="input-group-text">
+                <i class="fas fa-lock"></i>
+              </span>
+              <input
+                type="password"
+                class="form-control"
+                id="regPassword"
+                placeholder="Create Password"
+                pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()_+\[\]{};':&quot;\\|,.<>\/?]).{8,}$"
+                title="Must be 8+ chars, 1 uppercase, 1 number, and 1 special character."
+                required
+              >
+              <button
+                type="button"
+                class="password-toggle"
+                onclick="togglePassword('regPassword', this)"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <small class="password-hint">
+              <i class="fas fa-info-circle"></i>
+              Min 8 chars, 1 uppercase, 1 number & 1 special character.
+            </small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Confirm <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <input
+                type="password"
+                class="form-control"
+                id="regConfirmPassword"
+                placeholder="Repeat Password"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Security Verification <span class="required-asterisk">*</span>
+            </label>
+            <div class="captcha-wrapper">
+              <div class="captcha-visual">
+                <div class="captcha-display" id="regCaptchaCode"></div>
+                <button
+                  type="button"
+                  class="refresh-btn"
+                  onclick="generateRegCaptcha()"
+                >
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-shield-alt"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="regCaptchaInput"
+                  placeholder="Enter code"
+                  required
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4 form-check d-flex align-items-center">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="terms"
+              required
+            >
+            <label
+              class="form-check-label ms-2"
+              for="terms"
+              style="font-size: 0.9rem; font-weight: 500;"
+            >
+              I agree to the <a href="#">Terms & Conditions</a>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-auth">
+            Submit Registration
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <p>
+            Already have an account?
+            <a href="/login">Login Here</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
