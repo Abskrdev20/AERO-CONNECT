@@ -81,17 +81,39 @@ function go(url) {
 ===================================================== */
 function handleUserLogin(event) {
   event.preventDefault();
-  const input = document.getElementById("userCaptchaInput").value;
 
-  if (input.toUpperCase() !== userCaptcha) {
+  const email = document.querySelector('input[type="email"]').value;
+  const password = document.getElementById("userLoginPassword").value;
+  const captchaInput = document.getElementById("userCaptchaInput").value;
+
+  if (captchaInput.toUpperCase() !== userCaptcha) {
     alert("Invalid security code.");
     generateUserCaptcha();
     return;
   }
 
-  // --- REDIRECT TO DASHBOARD ---
-  window.location.href = "/dashboard";
+  fetch("/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Login successful!");
+        window.location.href = "/dashboard";
+      } else {
+        alert(data.message);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Server error. Please try again.");
+    });
 }
+
 
 /* =====================================================
    ADMIN LOGIN HANDLER
@@ -138,6 +160,34 @@ function handleRegister(event) {
     generateRegCaptcha();
     return;
   }
+  fetch("/auth/register", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    fullName: document.querySelector('input[placeholder="Full Name"]').value,
+    employeeId: document.querySelector('input[placeholder="EMP ID"]').value,
+    email: document.querySelector('input[type="email"]').value,
+    mobile: document.querySelector('input[type="tel"]').value,
+    position: document.querySelectorAll("select")[0].value,
+    department: document.querySelectorAll("select")[1].value,
+    password
+  })
+})
+.then(res => res.json())
+.then(data => {
+  if (data.success) {
+    alert("Registration successful! Please login.");
+    window.location.href = "/login";
+  } else {
+    alert(data.message);
+  }
+})
+.catch(err => {
+  console.error(err);
+  alert("Server error. Please try again.");
+});
 
   // --- REGISTRATION SUCCESS LOGIC ---
   // Works for ANY position selected
