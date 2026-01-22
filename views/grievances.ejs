@@ -86,18 +86,20 @@
                             <h5 class="text-primary fw-bold mb-4" style="color: #003d82 !important;">Complaint Details</h5>
                             
                             <div class="mb-4">
-                                <label for="category" class="form-label fw-bold">Complaint Category <span class="text-danger">*</span></label>
+                                <label for="category" class="form-label fw-bold">Select Department<span class="text-danger">*</span></label>
                                 <select class="form-select" id="category" name="category" required>
                                     <option value="">-- Select Category --</option>
-                                    <option value="baggage">Baggage Issues</option>
-                                    <option value="staff">Staff Behaviour</option>
-                                    <option value="facility">Facility Problems</option>
-                                    <option value="security">Security Concerns</option>
-                                    <option value="cleanliness">Cleanliness</option>
-                                    <option value="accessibility">Accessibility</option>
-                                    <option value="equipment">Equipment/Infrastructure</option>
-                                    <option value="harassment">Harassment/Discrimination</option>
-                                    <option value="safety">Safety Violations</option>
+                                    <option value="Operations">Operations</option>
+                                    <option value="IT">IT (Information Technology)</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="ATM">ATM (Air Traffic Management)</option>
+                                    <option value="HR">HR (Human Resources)</option>
+                                    <option value="Engg. Civil">Engg. Civil</option>
+                                    <option value="Engg. Electrical">Engg. Electrical</option>
+                                    <option value="Security">Security</option>
+                                    <option value="Commercial" >Commercial </option>
+                                    <option value="Hindi" >Hindi</option>
+                                    <option value="Law" >Law</option>
                                     <option value="other">Other</option>
                                 </select>
                             </div>
@@ -128,9 +130,10 @@
                                 <label for="priority" class="form-label fw-bold">Priority/Urgency Level <span class="text-danger">*</span></label>
                                 <select class="form-select" id="priority" name="priority" required>
                                     <option value="">-- Select Priority --</option>
-                                    <option value="low">Low - Can wait for resolution</option>
-                                    <option value="medium">Medium - Needs attention soon</option>
-                                    <option value="high">High - Urgent, requires immediate action</option>
+                                    <option value="high">Request - Suggestions, Feature, requests, Queries </option>
+                                    <option value="low">Low - General complaints, Process issues  </option>
+                                    <option value="medium">High -Equipment failure, Urgent repairs </option>
+                                    <option value="high">Urgent - Safety hazard, System down, Security breach</option>
                                 </select>
                             </div>
 
@@ -156,43 +159,10 @@
                         </div>
 
                         <!-- Contact Preference Section -->
-                        <div class="mb-5 pb-4 border-bottom">
-                            <h5 class="text-primary fw-bold mb-3" style="color: #003d82 !important;">Contact Preferences</h5>
-                            <p class="text-muted mb-3 small">How would you like to be contacted regarding this complaint?</p>
-                            
-                            <div class="contact-preferences">
-                                <div class="contact-option">
-                                    <div class="contact-checkbox">
-                                        <input type="checkbox" id="prefEmail" name="contactPreference" value="email" checked>
-                                        <label for="prefEmail">
-                                            <i class="fas fa-envelope"></i> Email
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="contact-option">
-                                    <div class="contact-checkbox">
-                                        <input type="checkbox" id="prefSMS" name="contactPreference" value="sms">
-                                        <label for="prefSMS">
-                                            <i class="fas fa-sms"></i> SMS
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="contact-option">
-                                    <div class="contact-checkbox">
-                                        <input type="checkbox" id="prefPhone" name="contactPreference" value="phone">
-                                        <label for="prefPhone">
-                                            <i class="fas fa-phone"></i> Phone
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    
 
                         <!-- Action Buttons -->
-                        <div class="d-flex gap-3">
-                            <button type="button" class="btn btn-secondary" id="saveDraftBtn" style="padding: 10px 24px;">
-                                <i class="fas fa-save me-2"></i>Save as Draft
-                            </button>
+                        <div class="d-flex align-items-center">
                             <button type="submit" class="btn btn-primary-custom flex-grow-1" style="background-color: #003d82; color: white;">
                                 <i class="fas fa-paper-plane me-2"></i>Submit Complaint
                             </button>
@@ -340,13 +310,64 @@
             subjectCount.textContent = this.value.length;
         });
         
-        // Form Submission
-        document.getElementById('complaintForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Ensure description from Quill is in the hidden input
-            document.querySelector('input[name=description]').value = quill.root.innerHTML;
-            alert('Grievance submitted successfully!');
-            // window.location.href = '/dashboard';
-        });
+      document.getElementById("complaintForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  // sync Quill content
+  document.querySelector('input[name=description]').value = quill.root.innerHTML;
+
+  // prepare files
+  const formData = new FormData();
+  attachedFiles.forEach(file => {
+    formData.append("attachments", file);
+  });
+
+  try {
+    const res = await fetch("/grievances/upload", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      alert("File upload failed");
+      return;
+    }
+
+  // collect grievance form data
+const grievanceData = {
+  empId: document.querySelector("input[name=empId]").value,
+  category: document.getElementById("category").value,
+  subject: document.getElementById("subject").value,
+  description: document.querySelector("input[name=description]").value,
+  incidentDate: document.getElementById("incidentDate").value,
+  incidentTime: document.getElementById("incidentTime").value,
+  location: document.getElementById("location").value,
+  priority: document.getElementById("priority").value,
+  attachments: data.files
+};
+
+const saveRes = await fetch("/grievances/submit", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(grievanceData)
+});
+
+const saveData = await saveRes.json();
+
+if (!saveData.success) {
+  alert("Failed to submit grievance");
+  return;
+}
+
+alert("Grievance submitted successfully!");
+window.location.href = "/dashboard";
+
+  } catch (err) {
+    alert("Something went wrong while uploading files");
+  }
+});
+
     });
 </script>
