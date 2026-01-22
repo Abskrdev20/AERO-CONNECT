@@ -27,19 +27,18 @@
       <div class="input-group">
         <label for="token">Grievance Token Number</label>
         <div class="input-wrapper">
-          <svg viewBox="0 0 24 24">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0110 0v4"></path>
-          </svg>
-          <input 
-            type="text" 
+          <input
+            type="text"
             id="token"
-            name="token" 
-            placeholder="e.g., AAI-GRV-2026-001234" 
+            name="token"
+            placeholder="e.g., AAI-GRV-2026-00001"
+            value="<%= typeof token !== 'undefined' ? token : '' %>"
             required
-            pattern="AAI-GRV-\d{4}-\d{6}"
-            title="Please enter a valid token number (AAI-GRV-YYYY-XXXXXX)">
+          />
         </div>
+        <% if (typeof error !== 'undefined') { %>
+          <p class="error-text"><%= error %></p>
+        <% } %>
       </div>
 
       <button type="submit">Check Status</button>

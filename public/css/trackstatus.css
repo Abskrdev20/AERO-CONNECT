@@ -1,3 +1,6 @@
+/* =====================================================
+   TRACK STATUS PAGE
+===================================================== */
 .trackstatus-page {
   min-height: calc(100vh - 140px);
   padding: 40px 0 60px;
@@ -9,16 +12,20 @@
   );
 }
 
-/* CONTAINER */
+/* =====================================================
+   CONTAINER
+===================================================== */
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px 24px;
+  padding: 24px;
   background: #eaf1ff;
   border-radius: 18px;
 }
 
-/* BACK BUTTON */
+/* =====================================================
+   BACK BUTTON
+===================================================== */
 .back-btn {
   background: #fff;
   color: #0b4aa2;
@@ -32,7 +39,9 @@
   background: #eaf1ff;
 }
 
-/* STATUS CARD */
+/* =====================================================
+   STATUS CARD
+===================================================== */
 .status-card {
   background: #fff;
   border-radius: 18px;
@@ -40,7 +49,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 14px 34px rgba(0,0,0,.08);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.08);
   margin-top: 20px;
 }
 
@@ -54,7 +63,16 @@
   font-size: 14px;
 }
 
-/* STATUS BADGE */
+/* RIGHT SIDE */
+.status-right {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* =====================================================
+   STATUS BADGES (ENUM SAFE)
+===================================================== */
 .status-badge {
   padding: 12px 26px;
   border-radius: 999px;
@@ -63,35 +81,73 @@
   color: #fff;
 }
 
-.submitted { background: #64748b; }
-.review { background: #2563eb; }
-.progressing { background: #f59e0b; color: #111; }
-.resolved { background: #16a34a; }
-.rejected { background: #dc2626; }
-.escalated { background: #7c3aed; }
+.status-open {
+  background: #64748b;
+}
 
-/* STEPPER */
+.status-review {
+  background: #2563eb;
+}
+
+.status-resolved {
+  background: #16a34a;
+}
+
+.status-closed {
+  background: #0f172a;
+}
+
+/* =====================================================
+   PRIORITY BADGES
+===================================================== */
+.priority-badge {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.priority-high {
+  background: #dc2626;
+}
+
+.priority-medium {
+  background: #f59e0b;
+  color: #111;
+}
+
+.priority-low {
+  background: #16a34a;
+}
+
+/* =====================================================
+   STEPPER
+===================================================== */
 .stepper {
   margin: 34px 0 6px;
   display: flex;
   justify-content: space-between;
   position: relative;
 }
-.stepper::before{
-  content:"";
-  position:absolute;
-  inset:18px 24px auto 30px;
-  height:4px;
-  background:#dbe3f3;
+
+.stepper::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 30px;
+  right: 24px;
+  height: 4px;
+  background: #dbe3f3;
   border-radius: 3px;
 }
+
 .step {
-  background: transparent;
-  padding: 0 10px;
   text-align: center;
   z-index: 1;
-
+  padding: 0 10px;
 }
+
 .step span {
   width: 34px;
   height: 34px;
@@ -99,17 +155,23 @@
   margin: 0 auto 6px;
   border-radius: 50%;
   background: #cbd5e1;
+  transition: background 0.4s ease, transform 0.3s ease;
 }
+
 .step.active span {
   background: #1e6bd6;
+  transform: scale(1.12);
 }
+
 .step p {
   margin: 0;
   font-size: 13px;
   font-weight: 600;
 }
 
-/* GRID */
+/* =====================================================
+   GRID
+===================================================== */
 .grid {
   margin-top: 28px;
   display: grid;
@@ -117,12 +179,14 @@
   gap: 26px;
 }
 
-/* CARD */
+/* =====================================================
+   CARD
+===================================================== */
 .card {
   background: #fff;
   border-radius: 18px;
   padding: 28px;
-  box-shadow: 0 10px 26px rgba(0,0,0,.07);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.07);
 }
 
 .card h4 {
@@ -136,27 +200,39 @@
   margin-top: 26px;
 }
 
-/* ROW */
+/* =====================================================
+   ROW
+===================================================== */
 .row {
   display: flex;
   justify-content: space-between;
   margin: 12px 0;
   font-size: 14px;
 }
-.label { color: #6b7280; }
-.value { font-weight: 600; }
 
-/* TIMELINE */
+.label {
+  color: #6b7280;
+}
+
+.value {
+  font-weight: 600;
+}
+
+/* =====================================================
+   TIMELINE
+===================================================== */
 .timeline {
   list-style: none;
   padding: 0;
   margin: 0;
 }
+
 .timeline li {
   padding: 12px 0 12px 22px;
   border-left: 4px solid #1e6bd6;
   position: relative;
 }
+
 .timeline li::before {
   content: "";
   position: absolute;
@@ -168,7 +244,9 @@
   border-radius: 50%;
 }
 
-/* REMARK */
+/* =====================================================
+   REMARK
+===================================================== */
 .remark {
   background: #eef4ff;
   border-left: 6px solid #1e6bd6;
@@ -178,27 +256,14 @@
   line-height: 1.6;
 }
 
-/* ALERTS */
-.alert {
-  margin-top: 18px;
-  padding: 16px;
-  border-radius: 12px;
-  font-size: 14px;
-}
-.alert.reject {
-  background: #fee2e2;
-  border-left: 6px solid #dc2626;
-}
-.alert.escalate {
-  background: #ede9fe;
-  border-left: 6px solid #7c3aed;
-}
-
-/* RESPONSIVE */
+/* =====================================================
+   RESPONSIVE
+===================================================== */
 @media (max-width: 900px) {
   .grid {
     grid-template-columns: 1fr;
   }
+
   .status-card {
     flex-direction: column;
     align-items: flex-start;

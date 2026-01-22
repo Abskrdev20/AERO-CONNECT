@@ -1,0 +1,79 @@
+<% layout('layouts/boilerplate') -%>
+<link rel="stylesheet" href="/css/dashboard.css">
+
+<div class="dashboard-container">
+
+  <main class="main-content" style="margin-left:260px; padding:30px">
+
+    <h2 class="mb-3">
+      Grievance Details
+    </h2>
+
+    <div class="card p-4 shadow-sm">
+
+      <p><strong>Grievance ID:</strong> <%= grievance.grievanceId %></p>
+      <p><strong>Status:</strong> <%= grievance.status.replace("_", " ") %></p>
+      <p><strong>Category:</strong> <%= grievance.category %></p>
+      <p><strong>Priority:</strong> <%= grievance.priority %></p>
+      <p><strong>Submitted On:</strong>
+        <%= new Date(grievance.createdAt).toLocaleString("en-IN") %>
+      </p>
+
+      <hr>
+
+      <h5>Subject</h5>
+      <p><%= grievance.subject %></p>
+
+      <h5>Description</h5>
+      <div class="border p-3 rounded bg-light">
+        <%- grievance.description %>
+      </div>
+
+      <hr>
+
+      <h5>Incident Details</h5>
+      <p><strong>Date:</strong> <%= grievance.incidentDate || "N/A" %></p>
+      <p><strong>Time:</strong> <%= grievance.incidentTime || "N/A" %></p>
+      <p><strong>Location:</strong> <%= grievance.location || "N/A" %></p>
+
+      <hr>
+
+      <h5>Attachments</h5>
+
+      <% if (grievance.attachments.length === 0) { %>
+        <p class="text-muted">No attachments uploaded.</p>
+      <% } %>
+
+      <div class="d-flex flex-wrap gap-3">
+        <% grievance.attachments.forEach(file => { %>
+
+          <% if (file.resource_type === "image") { %>
+            <a href="<%= file.url %>" target="_blank">
+              <img
+                src="<%= file.url %>"
+                style="width:150px;height:150px;object-fit:cover;border-radius:6px;border:1px solid #ddd"
+              >
+            </a>
+          <% } else { %>
+            <a
+              href="<%= file.url %>"
+              target="_blank"
+              class="btn btn-outline-primary btn-sm"
+            >
+              📄 View Document
+            </a>
+          <% } %>
+
+        <% }) %>
+      </div>
+
+      <div class="mt-4">
+        <a href="/dashboard" class="btn btn-secondary">
+          ← Back to Dashboard
+        </a>
+      </div>
+
+    </div>
+
+  </main>
+</div>

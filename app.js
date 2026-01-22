@@ -157,9 +157,77 @@ app.get("/track", (req, res) => {
   res.render("track");
 });
 
-app.post("/track/status", (req, res) => {
-  // your existing logic – unchanged
+app.post("/track/status", async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    // 1. Find grievance by grievanceId
+    const grievance = await Grievance.findOne({ grievanceId: token }).lean();
+
+    // 2. If not found
+    if (!grievance) {
+      return res.render("track", {
+        error: "Invalid grievance token. Please check and try again.",
+        token
+      });
+    }
+
+    // 3. STATUS → UI MAPPING
+let statusLabel, statusClass, step;
+
+switch (grievance.status) {
+  case "OPEN":
+    statusLabel = "Open";
+    statusClass = "status-open";
+    step = 1;
+    break;
+
+  case "UNDER_REVIEW":
+    statusLabel = "Under Review";
+    statusClass = "status-review";
+    step = 2;
+    break;
+
+  case "RESOLVED":
+    statusLabel = "Resolved";
+    statusClass = "status-resolved";
+    step = 3;
+    break;
+
+  case "CLOSED":
+    statusLabel = "Closed";
+    statusClass = "status-closed";
+    step = 4;
+    break;
+}
+
+    // 4. Render tracking status page
+    res.render("trackstatus", {
+      token: grievance.grievanceId,
+      submissionDate: grievance.createdAt.toDateString(),
+      lastUpdated: grievance.updatedAt.toDateString(),
+      department: grievance.category,
+      priority: grievance.priority.toUpperCase(),
+
+      statusLabel,
+      statusClass,
+      step,
+
+      remark: grievance.remark || "No remarks added yet.",
+      timeline: [
+        `${grievance.createdAt.toDateString()} – Grievance Raised`
+        // Later this will come from DB
+      ]
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).render("track", {
+      error: "Something went wrong. Please try again later."
+    });
+  }
 });
+
 
 /* ================= SERVER ================= */
 const PORT = process.env.PORT || 8080;

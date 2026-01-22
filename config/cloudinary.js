@@ -11,11 +11,9 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "aero-connect/grievances",
-    allowed_formats: ["jpg", "jpeg", "png", "pdf", "doc", "docx"]
+    allowed_formats: ["jpg", "jpeg", "png", "pdf", "doc", "docx"],
+    resource_type: "auto"
   }
 });
 
-module.exports = {
-  cloudinary,
-  storage
-};
+module.exports = { cloudinary, storage };

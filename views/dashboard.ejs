@@ -89,7 +89,7 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                                     <tbody>
+            <tbody>
                 <% if (grievances.length === 0) { %>
                     <tr>
                     <td colspan="5" class="text-center text-muted">
@@ -113,7 +113,8 @@
                         </span>
                     </td>
                     <td>
-                        <button class="btn-sm btn-view">
+                        <button class="btn-sm btn-view"
+                        onclick="window.location.href='/grievances/<%= grv.grievanceId %>'">
                         View
                         </button>
                     </td>

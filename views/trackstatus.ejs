@@ -3,44 +3,58 @@
 <link rel="stylesheet" href="/css/trackstatus.css">
 
 <div class="trackstatus-page">
-
   <div class="container">
 
-    <!-- BACK BUTTON -->
+    <!-- BACK -->
     <button class="back-btn" onclick="window.location.href='/track'">
       ← Back
     </button>
 
-    <!-- STATUS CARD -->
+    <!-- HEADER CARD -->
     <div class="status-card">
       <div class="status-left">
-        <h3>Grievance Status</h3>
+        <h3>Grievance Tracking</h3>
         <div class="muted">Token: <b><%= token %></b></div>
         <div class="muted">Submitted on <%= submissionDate %></div>
       </div>
 
-      <div class="status-badge 
-        <%= status === 'Resolved' ? 'resolved' :
-            status === 'Rejected' ? 'rejected' :
-            status === 'Escalated' ? 'escalated' :
-            status.includes('Review') ? 'review' :
-            status.includes('Progress') ? 'progressing' : 'submitted' %>">
-        <%= status %>
+      <div class="status-right">
+        <span class="priority-badge <%= priority.toLowerCase() %>">
+          <%= priority %> PRIORITY
+        </span>
+        <span class="status-badge <%= statusClass %>">
+          <%= statusLabel %>
+        </span>
       </div>
     </div>
 
     <!-- STEPPER -->
     <div class="stepper">
-      <div class="step active"><span></span><p>Submitted</p></div>
-      <div class="step <%= progress >= 50 ? 'active' : '' %>"><span></span><p>Reviewed</p></div>
-      <div class="step <%= progress >= 80 ? 'active' : '' %>"><span></span><p>In Progress</p></div>
-      <div class="step <%= progress === 100 ? 'active' : '' %>"><span></span><p>Closed</p></div>
+      <div class="step <%= step >= 1 ? 'active' : '' %>">
+        <span></span>
+        <p>Open</p>
+      </div>
+
+      <div class="step <%= step >= 2 ? 'active' : '' %>">
+        <span></span>
+        <p>Under Review</p>
+      </div>
+
+      <div class="step <%= step >= 3 ? 'active' : '' %>">
+        <span></span>
+        <p>Resolved</p>
+      </div>
+
+      <div class="step <%= step >= 4 ? 'active' : '' %>">
+        <span></span>
+        <p>Closed</p>
+      </div>
     </div>
 
     <!-- GRID -->
     <div class="grid">
 
-      <!-- LEFT CARD -->
+      <!-- DETAILS -->
       <div class="card">
         <h4>Grievance Details</h4>
 
@@ -50,8 +64,8 @@
         </div>
 
         <div class="row">
-          <span class="label">Responsible Officer</span>
-          <span class="value"><%= officer %></span>
+          <span class="label">Current Status</span>
+          <span class="value"><%= statusLabel %></span>
         </div>
 
         <div class="row">
@@ -59,28 +73,18 @@
           <span class="value"><%= lastUpdated %></span>
         </div>
 
-        <h4 class="section-gap">Remarks</h4>
-        <div class="remark"><%= remark %></div>
-
-        <% if (status === "Rejected") { %>
-          <div class="alert reject">
-            <b>Rejected:</b> The grievance could not be processed due to incomplete information.
-          </div>
-        <% } %>
-
-        <% if (status === "Escalated") { %>
-          <div class="alert escalate">
-            <b>Escalated:</b> The grievance has been forwarded to a higher authority due to delay.
-          </div>
-        <% } %>
+        <h4 class="section-gap">Latest Remark</h4>
+        <div class="remark">
+          <%= remark || "No remarks available yet." %>
+        </div>
       </div>
 
-      <!-- RIGHT CARD -->
+      <!-- TIMELINE -->
       <div class="card">
-        <h4>Status History</h4>
+        <h4>Status Timeline</h4>
         <ul class="timeline">
-          <% timeline.forEach(step => { %>
-            <li><%= step %></li>
+          <% timeline.forEach(item => { %>
+            <li><%= item %></li>
           <% }) %>
         </ul>
       </div>

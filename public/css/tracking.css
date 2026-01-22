@@ -192,3 +192,9 @@ button[type="submit"]:hover {
     font-size: 15px;
   }
 }
+.error-text {
+  margin-top: 8px;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+}
