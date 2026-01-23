@@ -1,8 +1,28 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 
+/* ================= REGISTER ================= */
 exports.registerUser = async (req, res) => {
   try {
+    /* 1️⃣ CAPTCHA VALIDATION (FIRST) */
+    const userCaptcha = req.body.captcha;
+    const sessionCaptcha = req.session.captcha;
+
+    if (
+      !userCaptcha ||
+      !sessionCaptcha ||
+      userCaptcha.toUpperCase() !== sessionCaptcha
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired security code"
+      });
+    }
+
+    // one-time use
+    req.session.captcha = null;
+
+    /* 2️⃣ NORMAL REGISTER LOGIC */
     const {
       fullName,
       employeeId,
@@ -31,7 +51,7 @@ exports.registerUser = async (req, res) => {
       mobile,
       position,
       department,
-      password // (we’ll hash later)
+      password
     });
 
     await newUser.save();
@@ -40,6 +60,7 @@ exports.registerUser = async (req, res) => {
       success: true,
       message: "Registration successful"
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -49,8 +70,29 @@ exports.registerUser = async (req, res) => {
   }
 };
 
+
+/* ================= LOGIN ================= */
 exports.loginUser = async (req, res) => {
   try {
+    /* 1️⃣ CAPTCHA VALIDATION (FIRST) */
+    const userCaptcha = req.body.captcha;
+    const sessionCaptcha = req.session.captcha;
+
+    if (
+      !userCaptcha ||
+      !sessionCaptcha ||
+      userCaptcha.toUpperCase() !== sessionCaptcha
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired security code"
+      });
+    }
+
+    // one-time use
+    req.session.captcha = null;
+
+    /* 2️⃣ NORMAL LOGIN LOGIC */
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -79,18 +121,17 @@ exports.loginUser = async (req, res) => {
     }
 
     req.session.userId = user._id;
-    
+
     res.status(200).json({
       success: true,
       message: "Login successful"
     });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({
       success: false,
       message: "Server error"
     });
   }
 };
-
-

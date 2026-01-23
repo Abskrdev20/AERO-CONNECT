@@ -188,14 +188,19 @@
             </label>
             <div class="captcha-wrapper">
               <div class="captcha-visual">
-                <div class="captcha-display" id="regCaptchaCode"></div>
-                <button
+                <img
+                  src="/auth/captcha"
+                  alt="captcha"
+                  class="captcha-display"
+                  onclick="this.src='/auth/captcha?'+Date.now()"
+                />
+                <!-- <button
                   type="button"
                   class="refresh-btn"
                   onclick="generateRegCaptcha()"
                 >
                   <i class="fas fa-sync-alt"></i>
-                </button>
+                </button> -->
               </div>
               <div class="input-group">
                 <span class="input-group-text">

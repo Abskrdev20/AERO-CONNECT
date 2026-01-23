@@ -1,63 +1,10 @@
 /* =====================================================
-   GLOBAL CAPTCHA VARIABLES
-===================================================== */
-let userCaptcha = "";
-let adminCaptcha = "";
-let regCaptcha = "";
-let forgotCaptcha = "";
-
-/* =====================================================
-   ON LOAD – GENERATE ALL REQUIRED CAPTCHAS
-===================================================== */
-window.addEventListener("DOMContentLoaded", function () {
-  if (document.getElementById("userCaptchaCode")) generateUserCaptcha();
-  if (document.getElementById("adminCaptchaCode")) generateAdminCaptcha();
-  if (document.getElementById("regCaptchaCode")) generateRegCaptcha();
-  if (document.getElementById("forgotCaptchaCode")) generateForgotCaptcha();
-});
-
-/* =====================================================
-   CAPTCHA GENERATOR (COMMON)
-===================================================== */
-function generateCaptcha() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code = "";
-  for (let i = 0; i < 6; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return code;
-}
-
-function generateUserCaptcha() {
-  userCaptcha = generateCaptcha();
-  document.getElementById("userCaptchaCode").textContent = userCaptcha;
-  document.getElementById("userCaptchaInput").value = "";
-}
-
-function generateAdminCaptcha() {
-  adminCaptcha = generateCaptcha();
-  document.getElementById("adminCaptchaCode").textContent = adminCaptcha;
-  document.getElementById("adminCaptchaInput").value = "";
-}
-
-function generateRegCaptcha() {
-  regCaptcha = generateCaptcha();
-  document.getElementById("regCaptchaCode").textContent = regCaptcha;
-  document.getElementById("regCaptchaInput").value = "";
-}
-
-function generateForgotCaptcha() {
-  forgotCaptcha = generateCaptcha();
-  document.getElementById("forgotCaptchaCode").textContent = forgotCaptcha;
-  document.getElementById("forgotCaptchaInput").value = "";
-}
-
-/* =====================================================
    PASSWORD VISIBILITY TOGGLE
 ===================================================== */
 function togglePassword(inputId, button) {
   const input = document.getElementById(inputId);
   const icon = button.querySelector("i");
+
   if (input.type === "password") {
     input.type = "text";
     icon.classList.remove("fa-eye");
@@ -86,113 +33,99 @@ function handleUserLogin(event) {
   const password = document.getElementById("userLoginPassword").value;
   const captchaInput = document.getElementById("userCaptchaInput").value;
 
-  if (captchaInput.toUpperCase() !== userCaptcha) {
-    alert("Invalid security code.");
-    generateUserCaptcha();
+  // ✅ CLEANUP – UX ONLY
+  if (!captchaInput) {
+    alert("Please enter the security code");
     return;
   }
 
   fetch("/auth/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, captcha: captchaInput })
   })
     .then(res => res.json())
     .then(data => {
       if (data.success) {
-        alert("Login successful!");
         window.location.href = "/dashboard";
       } else {
         alert(data.message);
+        refreshCaptcha();
       }
     })
-    .catch(err => {
-      console.error(err);
+    .catch(() => {
       alert("Server error. Please try again.");
+      refreshCaptcha();
     });
 }
-
 
 /* =====================================================
    ADMIN LOGIN HANDLER
 ===================================================== */
 function handleAdminLogin(event) {
   event.preventDefault();
-  const input = document.getElementById("adminCaptchaInput").value;
 
-  if (input.toUpperCase() !== adminCaptcha) {
-    alert("Invalid security code.");
-    generateAdminCaptcha();
+  const captchaInput = document.getElementById("adminCaptchaInput").value;
+
+  // ✅ CLEANUP – UX ONLY
+  if (!captchaInput) {
+    alert("Please enter the security code");
     return;
   }
-  
-  alert("Admin login successful! (Redirecting to Admin Dashboard...)");
+
+  alert("Admin login successful! (Demo)");
   window.location.href = "/admin/dashboard";
 }
 
 /* =====================================================
    REGISTER HANDLER
 ===================================================== */
-const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&()_+\[\]{};':"\\|,.<>\/?]).{8,}$/;
-
 function handleRegister(event) {
   event.preventDefault();
 
   const password = document.getElementById("regPassword").value;
   const confirmPassword = document.getElementById("regConfirmPassword").value;
   const captchaInput = document.getElementById("regCaptchaInput").value;
-  const position = document.querySelector("select[required]").value; // Get selected position
+
+  // ✅ CLEANUP – UX ONLY
+  if (!captchaInput) {
+    alert("Please enter the security code");
+    return;
+  }
 
   if (password !== confirmPassword) {
     alert("Passwords do not match!");
     return;
   }
 
-  if (!passwordRegex.test(password)) {
-    alert("Password must have minimum 8 characters, 1 uppercase letter, 1 number and 1 special character.");
-    return;
-  }
-
-  if (captchaInput.toUpperCase() !== regCaptcha) {
-    alert("Invalid security code.");
-    generateRegCaptcha();
-    return;
-  }
   fetch("/auth/register", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    fullName: document.querySelector('input[placeholder="Full Name"]').value,
-    employeeId: document.querySelector('input[placeholder="EMP ID"]').value,
-    email: document.querySelector('input[type="email"]').value,
-    mobile: document.querySelector('input[type="tel"]').value,
-    position: document.querySelectorAll("select")[0].value,
-    department: document.querySelectorAll("select")[1].value,
-    password
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fullName: document.querySelector('input[placeholder="Full Name"]').value,
+      employeeId: document.querySelector('input[placeholder="EMP ID"]').value,
+      email: document.querySelector('input[type="email"]').value,
+      mobile: document.querySelector('input[type="tel"]').value,
+      position: document.querySelectorAll("select")[0].value,
+      department: document.querySelectorAll("select")[1].value,
+      password,
+      captcha: captchaInput
+    })
   })
-})
-.then(res => res.json())
-.then(data => {
-  if (data.success) {
-    alert("Registration successful! Please login.");
-    window.location.href = "/login";
-  } else {
-    alert(data.message);
-  }
-})
-.catch(err => {
-  console.error(err);
-  alert("Server error. Please try again.");
-});
-
-  // --- REGISTRATION SUCCESS LOGIC ---
-  // Works for ANY position selected
-  alert(`Registration Successful for position: ${position}\nPlease login to continue.`);
-  window.location.href = "/login";
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Registration successful! Please login.");
+        window.location.href = "/login";
+      } else {
+        alert(data.message);
+        refreshCaptcha();
+      }
+    })
+    .catch(() => {
+      alert("Server error. Please try again.");
+      refreshCaptcha();
+    });
 }
 
 /* =====================================================
@@ -200,14 +133,24 @@ function handleRegister(event) {
 ===================================================== */
 function handleForgotPassword(event) {
   event.preventDefault();
+
   const captchaInput = document.getElementById("forgotCaptchaInput").value;
 
-  if (captchaInput.toUpperCase() !== forgotCaptcha) {
-    alert("Invalid security code.");
-    generateForgotCaptcha();
+  // ✅ CLEANUP – UX ONLY
+  if (!captchaInput) {
+    alert("Please enter the security code");
     return;
   }
 
   alert("Password reset link sent to your official email!");
   go("/login");
+}
+
+/* =====================================================
+   CAPTCHA REFRESH (COMMON)
+===================================================== */
+function refreshCaptcha() {
+  document.querySelectorAll(".captcha-display").forEach(img => {
+    img.src = "/auth/captcha?" + Date.now();
+  });
 }

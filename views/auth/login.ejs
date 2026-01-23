@@ -80,14 +80,19 @@
             </label>
             <div class="captcha-wrapper">
               <div class="captcha-visual">
-                <div class="captcha-display" id="userCaptchaCode"></div>
-                <button
+                <img
+                  src="/auth/captcha"
+                  alt="captcha"
+                  class="captcha-display"
+                  onclick="this.src='/auth/captcha?'+Date.now()"
+                />
+                <!-- <button
                   type="button"
                   class="refresh-btn"
                   onclick="generateUserCaptcha()"
                 >
                   <i class="fas fa-sync-alt"></i>
-                </button>
+                </button> -->
               </div>
               <div class="input-group">
                 <span class="input-group-text">
