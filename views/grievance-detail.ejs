@@ -1,16 +1,21 @@
 <% layout('layouts/boilerplate') -%>
+
+<%
+  if (typeof isAdmin === "undefined") {
+    isAdmin = false;
+  }
+%>
+
 <link rel="stylesheet" href="/css/dashboard.css">
 
 <div class="dashboard-container">
-
   <main class="main-content" style="margin-left:260px; padding:30px">
 
-    <h2 class="mb-3">
-      Grievance Details
-    </h2>
+    <h2 class="mb-3">Grievance Details</h2>
 
     <div class="card p-4 shadow-sm">
 
+      <!-- ================= BASIC INFO ================= -->
       <p><strong>Grievance ID:</strong> <%= grievance.grievanceId %></p>
       <p><strong>Status:</strong> <%= grievance.status.replace("_", " ") %></p>
       <p><strong>Category:</strong> <%= grievance.category %></p>
@@ -19,8 +24,38 @@
         <%= new Date(grievance.createdAt).toLocaleString("en-IN") %>
       </p>
 
+      <% if (grievance.reviewedAt) { %>
+        <p>
+          <strong>Reviewed At:</strong>
+          <%= new Date(grievance.reviewedAt).toLocaleString("en-IN") %>
+        </p>
+      <% } %>
+
+      <% if (grievance.resolvedAt) { %>
+        <p>
+          <strong>Resolved At:</strong>
+          <%= new Date(grievance.resolvedAt).toLocaleString("en-IN") %>
+        </p>
+      <% } %>
+
       <hr>
 
+      <!-- ================= COMPLAINANT DETAILS ================= -->
+      <h5>Complainant Details</h5>
+      <p><strong>Name:</strong> <%= grievance.user.fullName %></p>
+      <p><strong>Employee ID:</strong> <%= grievance.user.employeeId %></p>
+      <p><strong>Email:</strong> <%= grievance.user.email %></p>
+      <p><strong>Department:</strong> <%= grievance.user.department %></p>
+      <p><strong>Designation:</strong>
+        <%= grievance.user && grievance.user.position
+              ? grievance.user.position.replace(/_/g, " ")
+              : "N/A" %>
+      </p>
+
+
+      <hr>
+
+      <!-- ================= GRIEVANCE CONTENT ================= -->
       <h5>Subject</h5>
       <p><%= grievance.subject %></p>
 
@@ -31,6 +66,7 @@
 
       <hr>
 
+      <!-- ================= INCIDENT DETAILS ================= -->
       <h5>Incident Details</h5>
       <p><strong>Date:</strong> <%= grievance.incidentDate || "N/A" %></p>
       <p><strong>Time:</strong> <%= grievance.incidentTime || "N/A" %></p>
@@ -38,42 +74,77 @@
 
       <hr>
 
+      <!-- ================= ATTACHMENTS ================= -->
       <h5>Attachments</h5>
-
       <% if (grievance.attachments.length === 0) { %>
         <p class="text-muted">No attachments uploaded.</p>
       <% } %>
 
       <div class="d-flex flex-wrap gap-3">
         <% grievance.attachments.forEach(file => { %>
-
           <% if (file.resource_type === "image") { %>
             <a href="<%= file.url %>" target="_blank">
               <img
                 src="<%= file.url %>"
-                style="width:150px;height:150px;object-fit:cover;border-radius:6px;border:1px solid #ddd"
-              >
+                style="width:150px;height:150px;object-fit:cover;border-radius:6px;">
             </a>
           <% } else { %>
             <a
               href="<%= file.url %>"
               target="_blank"
-              class="btn btn-outline-primary btn-sm"
-            >
+              class="btn btn-outline-primary btn-sm">
               📄 View Document
             </a>
           <% } %>
-
         <% }) %>
       </div>
 
+      <!-- ================= DEPARTMENT RESPONSE ================= -->
+      <% if (grievance.departmentComment) { %>
+        <hr>
+        <h5>Department Response</h5>
+        <div class="alert alert-info">
+          <%= grievance.departmentComment %>
+        </div>
+      <% } %>
+
+      <!-- ================= ADMIN ACTION ================= -->
+      <% if (isAdmin) { %>
+        <hr>
+        <h5>Department Action</h5>
+
+        <form
+          method="POST"
+          action="/admin/grievances/<%= grievance.grievanceId %>/action">
+
+          <div class="mb-3">
+            <label class="form-label">Department Response</label>
+            <textarea
+              name="remark"
+              class="form-control"
+              rows="4"
+              required
+            ><%= grievance.departmentComment || "" %></textarea>
+          </div>
+
+          <button class="btn btn-primary">
+            <% if (grievance.status === "OPEN") { %>
+              Mark as Under Review
+            <% } else if (grievance.status === "UNDER_REVIEW") { %>
+              Resolve Grievance
+            <% } %>
+          </button>
+        </form>
+      <% } %>
+
       <div class="mt-4">
-        <a href="/dashboard" class="btn btn-secondary">
-          ← Back to Dashboard
+        <a
+          href="<%= isAdmin ? '/admin/dashboard' : '/dashboard' %>"
+          class="btn btn-secondary">
+          ← Back
         </a>
       </div>
 
     </div>
-
   </main>
 </div>

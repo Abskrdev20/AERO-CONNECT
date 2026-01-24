@@ -60,21 +60,38 @@ function handleUserLogin(event) {
 }
 
 /* =====================================================
-   ADMIN LOGIN HANDLER
+   ADMIN LOGIN HANDLER (REAL)
 ===================================================== */
 function handleAdminLogin(event) {
   event.preventDefault();
 
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminLoginPassword").value;
   const captchaInput = document.getElementById("adminCaptchaInput").value;
-
-  // ✅ CLEANUP – UX ONLY
+  
   if (!captchaInput) {
     alert("Please enter the security code");
     return;
   }
 
-  alert("Admin login successful! (Demo)");
-  window.location.href = "/admin/dashboard";
+  fetch("/admin-auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, captcha: captchaInput })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        window.location.href = "/admin/dashboard";
+      } else {
+        alert(data.message);
+        refreshCaptcha();
+      }
+    })
+    .catch(() => {
+      alert("Server error. Please try again.");
+      refreshCaptcha();
+    });
 }
 
 /* =====================================================

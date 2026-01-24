@@ -22,22 +22,21 @@ const Grievance = require("../models/Grievance");
 router.get("/:grievanceId", async (req, res) => {
   try {
     if (!req.session.userId) {
-      return res.redirect("/login");
-    }
+    return res.redirect("/login");
+   }
 
-    const grievance = await Grievance.findOne({
-      grievanceId: req.params.grievanceId,
-      user: req.session.userId
-    }).lean();
+   const grievance = await Grievance.findOne({
+    grievanceId: req.params.grievanceId
+   }).lean();
 
-    if (!grievance) {
-      return res.status(404).render("errors/404");
-    }
+   if (!grievance) {
+    return res.redirect("/dashboard");
+   }
 
-    res.render("grievance-detail", {
-      grievance,
-      page: "dashboard"
-    });
+   res.render("grievance-detail", {
+    grievance,
+    isAdmin: false
+   });
   } catch (err) {
     res.status(500).send("Server Error");
   }

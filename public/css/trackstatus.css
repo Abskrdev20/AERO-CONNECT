@@ -131,6 +131,7 @@
   position: relative;
 }
 
+/* BASE LINE */
 .stepper::before {
   content: "";
   position: absolute;
@@ -140,6 +141,39 @@
   height: 4px;
   background: #dbe3f3;
   border-radius: 3px;
+}
+
+/* PROGRESS LINE (DYNAMIC) */
+.stepper::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 30px;
+  height: 4px;
+  width: 0%;
+  background: #1e6bd6;
+  border-radius: 3px;
+  transition: width 0.6s ease-in-out;
+}
+
+/* OPEN */
+.stepper:has(.step:nth-child(1).active)::after {
+  width: 0%;
+}
+
+/* UNDER REVIEW */
+.stepper:has(.step:nth-child(2).active)::after {
+  width: 33%;
+}
+
+/* RESOLVED */
+.stepper:has(.step:nth-child(3).active)::after {
+  width: 63%;
+}
+
+/* CLOSED */
+.stepper:has(.step:nth-child(4).active)::after {
+  width: 100%;
 }
 
 .step {

@@ -25,31 +25,33 @@
           </div>
         </div>
 
-        <div class="official-notice">
-          <i class="fas fa-exclamation-circle me-2"></i>
-          <strong>Official Registration:</strong>
-          Only authorized AAI employees, interns, and apprentices can register.
-          Providing false information may lead to disciplinary action.
-        </div>
+        <% if (typeof error !== "undefined") { %>
+          <div class="alert alert-danger mb-3">
+            <%= error %>
+          </div>
+        <% } %>
 
         <form onsubmit="handleAdminLogin(event)">
+          <!-- EMAIL -->
           <div class="mb-3">
             <label class="form-label">
-              Admin ID <span class="required-asterisk">*</span>
+              Email Address <span class="required-asterisk">*</span>
             </label>
             <div class="input-group">
               <span class="input-group-text">
-                <i class="fas fa-id-badge"></i>
+                <i class="fas fa-envelope"></i>
               </span>
               <input
-                type="text"
+                type="email"
+                id="adminEmail"
                 class="form-control"
-                placeholder="Admin identifier"
+                placeholder="department@aai.aero"
                 required
               >
             </div>
           </div>
 
+          <!-- PASSWORD -->
           <div class="mb-3">
             <label class="form-label">
               Password <span class="required-asterisk">*</span>
@@ -75,6 +77,7 @@
             </div>
           </div>
 
+          <!-- CAPTCHA -->
           <div class="mb-3">
             <label class="form-label">
               Security Verification <span class="required-asterisk">*</span>
@@ -87,13 +90,6 @@
                   class="captcha-display"
                   onclick="this.src='/auth/captcha?'+Date.now()"
                 />
-                <!-- <button
-                  type="button"
-                  class="refresh-btn"
-                  onclick="generateAdminCaptcha()"
-                >
-                  <i class="fas fa-sync-alt"></i>
-                </button> -->
               </div>
               <div class="input-group">
                 <span class="input-group-text">
@@ -114,15 +110,7 @@
             Access Dashboard
           </button>
         </form>
-
-        <div class="auth-footer">
-          <p>
-            <a href="/forgot-password">Trouble logging in?</a>
-          </p>
-        </div>
       </div>
     </div>
   </div>
 </div>
-
-

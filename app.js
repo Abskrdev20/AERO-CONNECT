@@ -3,44 +3,50 @@ const path = require("path");
 const ejsMate = require("ejs-mate");
 const dotenv = require("dotenv");
 const session = require("express-session");
+
 const User = require("./models/User");
+const Grievance = require("./models/Grievance");
+const Department = require("./models/Department");
 
+dotenv.config();
 
-dotenv.config(); // <-- load env variables
+/* ================= DB ================= */
+const connectDB = require("./config/db");
+connectDB();
 
-const connectDB = require("./config/db"); // <-- DB connection
-connectDB(); // <-- connect MongoDB
-const authRoutes = require("./routes/auth");
+/* ================= APP ================= */
 const app = express();
 
-// EJS setup
+/* ================= EJS ================= */
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+/* ================= MIDDLEWARE ================= */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
   session({
-    secret: "aero-connect-secret", // move to .env later
+    secret: "aero-connect-secret",
     resave: false,
     saveUninitialized: false
   })
 );
 
+/* ================= ROUTES ================= */
+const authRoutes = require("./routes/auth");
+app.use("/auth", authRoutes);
+
 const grievanceRoutes = require("./routes/grievance");
 app.use("/grievances", grievanceRoutes);
 
-const Grievance = require("./models/Grievance");
+const adminAuthRoutes = require("./routes/adminAuth");
+app.use("/admin-auth", adminAuthRoutes);
 
-
-
-
-app.use("/auth", authRoutes);
-
-
+const adminRoutes = require("./routes/admin");
+app.use("/admin", adminRoutes);
 
 /* ================= LANDING ================= */
 app.get("/", (req, res) => {
@@ -53,21 +59,18 @@ app.get("/login/admin", (req, res) => res.render("auth/admin-login"));
 app.get("/register", (req, res) => res.render("auth/register"));
 app.get("/forgot-password", (req, res) => res.render("auth/forgot"));
 
-/* ================= DASHBOARD ================= */
+/* ================= USER DASHBOARD ================= */
 app.get("/dashboard", async (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect("/login");
-  }
+  if (!req.session.userId) return res.redirect("/login");
 
   const user = await User.findById(req.session.userId).lean();
+  if (!user) return res.redirect("/login");
 
-  // fetch user's grievances
   const grievances = await Grievance.find({ user: user._id })
     .sort({ createdAt: -1 })
     .limit(5)
     .lean();
 
-  // calculate stats
   const total = await Grievance.countDocuments({ user: user._id });
   const pending = await Grievance.countDocuments({
     user: user._id,
@@ -84,11 +87,7 @@ app.get("/dashboard", async (req, res) => {
     designation: user.position.replace(/_/g, " "),
     department: user.department,
     email: user.email,
-    stats: {
-      total,
-      pending,
-      resolved
-    }
+    stats: { total, pending, resolved }
   };
 
   res.render("dashboard", {
@@ -98,20 +97,137 @@ app.get("/dashboard", async (req, res) => {
   });
 });
 
-app.get("/admin/dashboard", (req, res) => {
-  res.render("admin/dashboard", { page: "admin-dash" });
+/* ================= ADMIN DASHBOARD ================= */
+app.get("/admin/dashboard", async (req, res) => {
+  try {
+    if (!req.session.adminId) {
+      return res.redirect("/login/admin");
+    }
+
+    const department = await Department.findById(req.session.adminId).lean();
+    if (!department) {
+      req.session.adminId = null;
+      return res.redirect("/login/admin");
+    }
+
+    const grievances = await Grievance.find({
+      category: department.name
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const total = grievances.length;
+    const resolved = grievances.filter(g => g.status === "RESOLVED").length;
+
+    res.render("admin/dashboard", {
+      department,
+      grievances,
+      stats: { total, resolved }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.redirect("/login/admin");
+  }
 });
 
-app.get("/grievances", async (req, res) => {
+/* ================= ADMIN: TAKE ACTION VIEW ================= */
+app.get("/admin/grievances/:grievanceId", async (req, res) => {
+  if (!req.session.adminId) {
+    return res.redirect("/login/admin");
+  }
+
+  const grievance = await Grievance.findOne({
+    grievanceId: req.params.grievanceId
+  })
+  .populate("user", "fullName employeeId email department position")
+  .lean();
+
+  if (!grievance) {
+    return res.redirect("/admin/dashboard");
+  }
+
+  res.render("grievance-detail", {
+    grievance,
+    isAdmin: true
+  });
+});
+
+/* ================= ADMIN: SUBMIT ACTION ================= */
+app.post("/admin/grievances/:grievanceId/action", async (req, res) => {
+  if (!req.session.adminId) {
+    return res.redirect("/login/admin");
+  }
+
+  const { remark } = req.body;
+
+  const grievance = await Grievance.findOne({
+    grievanceId: req.params.grievanceId
+  })
+
+
+
+  if (!grievance) {
+    return res.redirect("/admin/dashboard");
+  }
+
+  // OPEN → UNDER_REVIEW
+  if (grievance.status === "OPEN") {
+    grievance.status = "UNDER_REVIEW";
+    grievance.reviewedAt = new Date();
+  }
+
+  // UNDER_REVIEW → RESOLVED
+  else if (grievance.status === "UNDER_REVIEW") {
+    grievance.status = "RESOLVED";
+    grievance.resolvedAt = new Date();
+    grievance.departmentComment = remark;
+  }
+
+  await grievance.save();
+
+  res.redirect(`/admin/grievances/${grievance.grievanceId}`);
+});
+
+/* ================= USER: VIEW GRIEVANCE ================= */
+app.get("/grievances/:grievanceId", async (req, res) => {
   if (!req.session.userId) {
     return res.redirect("/login");
   }
 
-  const user = await User.findById(req.session.userId).lean();
+  const grievance = await Grievance.findOne({
+    grievanceId: req.params.grievanceId
+  })
+  .populate("user", "fullName employeeId email department position")
+  .lean();
 
-  if (!user) {
-    return res.redirect("/login");
+
+  if (!grievance) {
+    return res.redirect("/dashboard");
   }
+
+  res.render("grievance-detail", {
+    grievance,
+    isAdmin: false
+  });
+});
+
+/* ================= ADMIN CREATE DEPARTMENT ================= */
+app.get("/admin/create-department", (req, res) => {
+  const message = req.session.adminMessage;
+  req.session.adminMessage = null;
+
+  res.render("admin/create-department", {
+    adminMessage: message
+  });
+});
+
+/* ================= USER GRIEVANCE PAGE ================= */
+app.get("/grievances", async (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+
+  const user = await User.findById(req.session.userId).lean();
+  if (!user) return res.redirect("/login");
 
   const currentUser = {
     name: user.fullName,
@@ -127,7 +243,7 @@ app.get("/grievances", async (req, res) => {
   });
 });
 
-
+/* ================= PROFILE ================= */
 app.get("/profile", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
 
@@ -145,12 +261,12 @@ app.get("/profile", async (req, res) => {
   });
 });
 
+/* ================= LOGOUT ================= */
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/");
   });
 });
-
 
 /* ================= TRACKING ================= */
 app.get("/track", (req, res) => {
@@ -160,11 +276,8 @@ app.get("/track", (req, res) => {
 app.post("/track/status", async (req, res) => {
   try {
     const { token } = req.body;
-
-    // 1. Find grievance by grievanceId
     const grievance = await Grievance.findOne({ grievanceId: token }).lean();
 
-    // 2. If not found
     if (!grievance) {
       return res.render("track", {
         error: "Invalid grievance token. Please check and try again.",
@@ -172,36 +285,51 @@ app.post("/track/status", async (req, res) => {
       });
     }
 
-    // 3. STATUS → UI MAPPING
-let statusLabel, statusClass, step;
+    let statusLabel, statusClass, step;
 
-switch (grievance.status) {
-  case "OPEN":
-    statusLabel = "Open";
-    statusClass = "status-open";
-    step = 1;
-    break;
+    switch (grievance.status) {
+      case "OPEN":
+        statusLabel = "Open";
+        statusClass = "status-open";
+        step = 1;
+        break;
+      case "UNDER_REVIEW":
+        statusLabel = "Under Review";
+        statusClass = "status-review";
+        step = 2;
+        break;
+      case "RESOLVED":
+        statusLabel = "Resolved";
+        statusClass = "status-resolved";
+        step = 3;
+        break;
+      case "CLOSED":
+        statusLabel = "Closed";
+        statusClass = "status-closed";
+        step = 4;
+        break;
+    }
 
-  case "UNDER_REVIEW":
-    statusLabel = "Under Review";
-    statusClass = "status-review";
-    step = 2;
-    break;
+    /* ================= REAL-TIME TIMELINE ================= */
+    const timeline = [];
 
-  case "RESOLVED":
-    statusLabel = "Resolved";
-    statusClass = "status-resolved";
-    step = 3;
-    break;
+    timeline.push(
+      `${grievance.createdAt.toDateString()} – Grievance Raised`
+    );
 
-  case "CLOSED":
-    statusLabel = "Closed";
-    statusClass = "status-closed";
-    step = 4;
-    break;
-}
+    if (grievance.reviewedAt) {
+      timeline.push(
+        `${grievance.reviewedAt.toDateString()} – Under Review by Department`
+      );
+    }
 
-    // 4. Render tracking status page
+    if (grievance.resolvedAt) {
+      timeline.push(
+        `${grievance.resolvedAt.toDateString()} – Grievance Resolved`
+      );
+    }
+
+    /* ================= RENDER ================= */
     res.render("trackstatus", {
       token: grievance.grievanceId,
       submissionDate: grievance.createdAt.toDateString(),
@@ -213,11 +341,8 @@ switch (grievance.status) {
       statusClass,
       step,
 
-      remark: grievance.remark || "No remarks added yet.",
-      timeline: [
-        `${grievance.createdAt.toDateString()} – Grievance Raised`
-        // Later this will come from DB
-      ]
+      remark: grievance.departmentComment || null,
+      timeline
     });
 
   } catch (err) {
@@ -227,7 +352,6 @@ switch (grievance.status) {
     });
   }
 });
-
 
 /* ================= SERVER ================= */
 const PORT = process.env.PORT || 8080;

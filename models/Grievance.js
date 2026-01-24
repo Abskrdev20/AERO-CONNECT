@@ -46,6 +46,19 @@ const grievanceSchema = new mongoose.Schema(
       type: String,
       enum: ["OPEN", "UNDER_REVIEW", "RESOLVED", "CLOSED"],
       default: "OPEN"
+    },
+
+    
+    departmentComment: {
+      type: String
+    },
+
+    reviewedAt: {
+      type: Date
+    },
+
+    resolvedAt: {
+        ype: Date
     }
   },
   { timestamps: true }

@@ -36,21 +36,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: [
-        "senior_engineer",
-        "junior_engineer",
-        "assistant_engineer",
-        "technician",
-        "intern",
-        "apprentice",
-        "permanent_staff",
-        "contract_staff"
+        "Intern",
+        "Apprentice",
+        "Junior_Executive",
+        "Senior_Manager",
+        "Assistant_Manager",
+        "Technician",
+        "Joint_General_Manager",
+        "Direct_General_Manager"
       ]
     },
 
     department: {
       type: String,
       required: true,
-      enum: ["administration", "hr", "it", "engineering", "operations", "safety", "atc"]
+      enum: ["Operations", "IT", "ATM","HR","Finance","Engg. Civil", "Engg. Electrical", "Security", "Commercial", "Hindi","Law"]
     },
 
     password: {
