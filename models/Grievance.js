@@ -23,7 +23,7 @@ const grievanceSchema = new mongoose.Schema(
       required: true
     },
     category: {
-      type: String,
+      type: String, // This maps to Department Name
       required: true
     },
     subject: {
@@ -39,7 +39,8 @@ const grievanceSchema = new mongoose.Schema(
     location: String,
     priority: {
       type: String,
-      required: true
+      required: true,
+      enum: ["LOW", "MEDIUM", "HIGH"]
     },
     attachments: [attachmentSchema],
     status: {
@@ -47,19 +48,13 @@ const grievanceSchema = new mongoose.Schema(
       enum: ["OPEN", "UNDER_REVIEW", "RESOLVED", "CLOSED"],
       default: "OPEN"
     },
-
-    
-    departmentComment: {
-      type: String
+    isEscalated: {
+      type: Boolean,
+      default: false
     },
-
-    reviewedAt: {
-      type: Date
-    },
-
-    resolvedAt: {
-        ype: Date
-    }
+    departmentComment: String,
+    reviewedAt: Date,
+    resolvedAt: Date
   },
   { timestamps: true }
 );

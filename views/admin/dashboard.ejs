@@ -1,18 +1,63 @@
 <% layout('layouts/boilerplate') -%>
 
+<!-- Features ke liye Chart.js load kiya gaya hai -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="/css/dashboard.css">
+
+<style>
+  /* Existing UI ko bina disturb kiye naye features ke liye minimal styling */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  .chart-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+
+  .chart-container {
+    height: 300px;
+    position: relative;
+  }
+
+  .export-btn {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #2c3e50;
+    padding: 6px 15px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    float: right;
+  }
+
+  .export-btn:hover {
+    background: #003d82;
+    color: #fff;
+  }
+
+  @media (max-width: 1100px) {
+    .charts-row { grid-template-columns: 1fr; }
+  }
+</style>
 
 <div class="dashboard-container">
 
-  <!-- SIDEBAR -->
+  <!-- SIDEBAR (UNTOUCHED) -->
   <aside class="sidebar">
     <div class="user-profile-widget">
       <div class="avatar-circle">A</div>
-    <h5 class="user-name">
-      Hey, <%= department.name %> Admin
-    </h5>
-    <p class="user-role">Department Administrator</p>
-
+      <h5 class="user-name">
+        Hey, <%= department.name %> Admin
+      </h5>
+      <p class="user-role">Department Administrator</p>
     </div>
 
     <nav class="side-nav">
@@ -45,53 +90,62 @@
       </div>
     </header>
 
-    <!-- STATS -->
-      <div class="stats-grid">
-
-        <!-- DEPARTMENT -->
-        <div class="stat-box blue">
-          <div class="stat-icon">
-            <i class="fas fa-building"></i>
-          </div>
-          <div class="stat-info">
-            <h3>1</h3>
-            <p>Department</p>
-          </div>
+    <!-- STATS (UNTOUCHED) -->
+    <div class="stats-grid">
+      <div class="stat-box blue">
+        <div class="stat-icon"><i class="fas fa-building"></i></div>
+        <div class="stat-info">
+          <h3>1</h3>
+          <p>Department</p>
         </div>
-
-        <!-- TOTAL GRIEVANCES (DEPARTMENT-SPECIFIC) -->
-        <div class="stat-box orange">
-          <div class="stat-icon">
-            <i class="fas fa-file-alt"></i>
-          </div>
-          <div class="stat-info">
-            <h3><%= stats.total %></h3>
-            <p>Total Grievances</p>
-          </div>
-        </div>
-
-        <!-- RESOLVED GRIEVANCES (DEPARTMENT-SPECIFIC) -->
-        <div class="stat-box green">
-          <div class="stat-icon">
-            <i class="fas fa-check-circle"></i>
-          </div>
-          <div class="stat-info">
-            <h3><%= stats.resolved %></h3>
-            <p>Resolved</p>
-          </div>
-        </div>
-
       </div>
 
+      <div class="stat-box orange">
+        <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+        <div class="stat-info">
+          <h3><%= stats.total %></h3>
+          <p>Total Grievances</p>
+        </div>
+      </div>
 
-    <!-- TABLE -->
+      <div class="stat-box green">
+        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-info">
+          <h3><%= stats.resolved %></h3>
+          <p>Resolved</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEW FEATURE: CHARTS SECTION -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <h4 class="section-title" style="margin-top: 0;">Success Matrix</h4>
+        <div class="chart-container">
+          <canvas id="statusPieChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h4 class="section-title" style="margin-top: 0;">Daily Intake Trend (7 Days)</h4>
+        <div class="chart-container">
+          <canvas id="intakeLineChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE WITH EXPORT FEATURE -->
     <div class="recent-activity-section">
-      <h4 class="section-title">
-        <i class="fas fa-history me-2"></i>Recent Grievances
-      </h4>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h4 class="section-title" style="margin-bottom: 0;">
+          <i class="fas fa-history me-2"></i>Recent Grievances
+        </h4>
+        <button class="export-btn" onclick="exportTableToCSV('AAI_Grievance_Registry.csv')">
+          <i class="fas fa-file-export me-1"></i> Export Data
+        </button>
+      </div>
 
       <div class="table-container">
-        <table class="custom-table">
+        <table class="custom-table" id="grievanceTable">
           <thead>
             <tr>
               <th>Grievance ID</th>
@@ -101,8 +155,6 @@
               <th>Action</th>
             </tr>
           </thead>
-
-
           <tbody>
             <% if (grievances.length === 0) { %>
               <tr>
@@ -116,9 +168,7 @@
               <tr>
                 <td class="fw-bold"><%= grv.grievanceId %></td>
                 <td><%= grv.category %></td>
-                <td>
-                  <%= new Date(grv.createdAt).toLocaleDateString("en-IN") %>
-                </td>
+                <td><%= new Date(grv.createdAt).toLocaleDateString("en-IN") %></td>
                 <td>
                   <span class="status-badge <%= grv.status.toLowerCase() %>">
                     <%= grv.status.replace("_", " ") %>
@@ -138,3 +188,99 @@
 
   </main>
 </div>
+
+<!-- DATA PROCESSING & CHART LOGIC -->
+<script>
+  const grievances = <%- JSON.stringify(grievances) %>;
+
+  function initCharts() {
+    // 1. Success Matrix (Pie Chart)
+    const solved = grievances.filter(g => g.status === 'RESOLVED' || g.status === 'CLOSED').length;
+    const pending = grievances.length - solved;
+
+    new Chart(document.getElementById('statusPieChart'), {
+      type: 'pie',
+      data: {
+        labels: ['Solved', 'Pending/Open'],
+        datasets: [{
+          data: [solved, pending],
+          backgroundColor: ['#27ae60', '#f3f6f9'],
+          borderColor: '#ffffff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { weight: '600' } } }
+        }
+      }
+    });
+
+    // 2. Daily Trend (Line Chart - Last 7 Days)
+    const labels = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      labels.push(d.toLocaleDateString('en-IN', { weekday: 'short' }));
+    }
+
+    const counts = labels.map((_, idx) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - idx));
+      const dateStr = d.toDateString();
+      return grievances.filter(g => new Date(g.createdAt).toDateString() === dateStr).length;
+    });
+
+    new Chart(document.getElementById('intakeLineChart'), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Grievances Received',
+          data: counts,
+          borderColor: '#003d82',
+          backgroundColor: 'rgba(0, 61, 130, 0.05)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+          pointBackgroundColor: '#003d82'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { beginAtZero: true, grid: { color: '#f1f3f5' }, ticks: { stepSize: 1 } }
+        }
+      }
+    });
+  }
+
+  // EXPORT FUNCTIONALITY
+  function exportTableToCSV(filename) {
+    let csv = [];
+    const rows = document.querySelectorAll("#grievanceTable tr");
+    
+    for (let i = 0; i < rows.length; i++) {
+      let row = [], cols = rows[i].querySelectorAll("td, th");
+      for (let j = 0; j < cols.length - 1; j++) { // Excluding Action column
+        row.push('"' + cols[j].innerText.trim() + '"');
+      }
+      csv.push(row.join(","));
+    }
+
+    const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+    const downloadLink = document.createElement("a");
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+  }
+
+  document.addEventListener('DOMContentLoaded', initCharts);
+</script>

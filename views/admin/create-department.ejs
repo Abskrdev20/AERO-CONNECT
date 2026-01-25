@@ -4,7 +4,6 @@
 
 <div class="dashboard-container">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="user-profile-widget">
       <div class="avatar-circle">A</div>
@@ -29,35 +28,28 @@
     </nav>
   </aside>
 
-  <!-- MAIN CONTENT -->
   <main class="main-content">
 
     <header class="content-header">
       <div>
-        <h1>Create Department</h1>
+        <h1>Account Management</h1>
         <p class="text-muted">
-          Add a new department with official credentials.
+          Add a new Department or a Super Admin to the system.
         </p>
       </div>
     </header>
-            <% if (typeof adminMessage !== "undefined") { %>
-    <div class="alert alert-success mb-3">
-      <%= adminMessage %>
-    </div>
-  <% } %>
+
+    <% if (typeof adminMessage !== "undefined") { %>
+      <div class="alert alert-success mb-3">
+        <%= adminMessage %>
+      </div>
+    <% } %>
 
     <div class="department-form-wrapper">
-
-
-      <form
-            class="department-card"
-            method="POST"
-            action="/admin/create-department"
-          >
-
+      <form class="department-card" method="POST" action="/admin/create-department">
 
         <div class="form-group">
-          <label>Department Name</label>
+          <label>Department/Admin Name</label>
           <input type="text" name="name" placeholder="e.g. Information Technology" required>
         </div>
 
@@ -71,9 +63,18 @@
           <input type="password" name="password" placeholder="Create secure password" required>
         </div>
 
+        <div class="form-group">
+          <label>Account Role</label>
+          <select name="role" class="form-control" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; background-color: #f9f9f9;" required>
+            <option value="DEPARTMENT">Department Admin (Normal)</option>
+            <option value="SUPERADMIN">Super Admin (Full Dashboard Access)</option>
+          </select>
+          <small class="text-muted">Super Admins can see analytics of all departments.</small>
+        </div>
+
         <button type="submit" class="btn-create">
           <i class="fas fa-plus-circle me-2"></i>
-          Create Department
+          Create Account
         </button>
 
       </form>
