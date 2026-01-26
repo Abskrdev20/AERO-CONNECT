@@ -261,3 +261,34 @@ body {
     .nav-divider { display: none; }
     .main-content { padding: 20px; }
 }
+
+/* Wrapper already exists: .table-container */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure table doesn't shrink badly */
+.custom-table {
+    min-width: 700px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .recent-activity-section {
+        padding: 15px;
+    }
+
+    .custom-table th,
+    .custom-table td {
+        padding: 12px;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .btn-view {
+        padding: 4px 10px;
+        font-size: 0.8rem;
+    }
+}

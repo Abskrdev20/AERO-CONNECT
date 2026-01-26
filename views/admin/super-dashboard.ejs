@@ -1,223 +1,30 @@
 <% layout('layouts/boilerplate') -%>
-
-<!-- Sistɛm Koman Senta CSS fɔ Supa Admin -->
 <link rel="stylesheet" href="/css/super-admin.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-    /* --- Supa Admin Professional UI/UX Refinements --- */
-    :root {
-        --sa-brand: #0f172a;
-        --sa-brand-light: #1e293b;
-        --sa-accent: #3b82f6;
-        --sa-surface: #ffffff;
-        --sa-subtle: #f8fafc;
-        --sa-border: #e2e8f0;
-        --sa-success: #10b981;
-        --sa-warning: #f59e0b;
-        --sa-danger: #ef4444;
-        --nav-height: 72px; 
-    }
-
-    body { margin: 0; padding: 0; background-color: #f1f5f9; overflow-x: hidden; }
-    
-    /* Root Layout Structure */
-    .sa-container { 
-        display: flex;
-        min-height: calc(100vh - var(--nav-height)); 
-        width: 100%;
-        align-items: stretch;
-    }
-    
-    /* Sidebar: Fixed block positioning with full background */
-    .sa-sidebar {
-        width: 280px;
-        background-color: var(--sa-brand);
-        padding: 1.5rem 1.25rem;
-        color: #94a3b8;
-        position: fixed;
-        left: 0;
-        top: var(--nav-height);
-        bottom: 0;
-        height: calc(100vh - var(--nav-height));
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-        box-shadow: 4px 0 25px rgba(0,0,0,0.2);
-        z-index: 1050;
-    }
-
-    .sa-profile {
-        padding: 1.25rem;
-        margin-bottom: 1.5rem;
-        background: rgba(255,255,255,0.05);
-        border-radius: 16px;
-        text-align: center;
-        border: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .sa-avatar {
-        width: 55px;
-        height: 55px;
-        background: var(--sa-accent);
-        color: white;
-        font-size: 1.4rem;
-        font-weight: 800;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 0.5rem;
-    }
-
-    .sa-nav-item {
-        padding: 0.75rem 1.15rem;
-        font-size: 0.85rem;
-        color: #94a3b8;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        border-radius: 10px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        text-decoration: none;
-        margin-bottom: 0.3rem;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-    .sa-nav-item:hover { background: rgba(255,255,255,0.08); color: white; transform: translateX(5px); }
-    .sa-nav-item.active { background: var(--sa-accent); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
-
-    /* Main Area Fix: Offset for Sidebar */
-    .sa-main { 
-        flex-grow: 1;
-        margin-left: 280px; 
-        padding: 1.5rem 3.5rem; 
-        max-width: calc(100% - 280px);
-        overflow-y: auto;
-    }
-
-    .dashboard-section { display: none; }
-    .dashboard-section.active { display: block; animation: fadeIn 0.4s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* EXECUTIVE LEFT-RIGHT HEADERS */
-    .sa-header { 
-        margin-bottom: 1.5rem; 
-        border-bottom: 1px solid var(--sa-border); 
-        padding-bottom: 1rem;
-        display: flex;
-        justify-content: space-between; /* Strictly Left and Right */
-        align-items: center;
-    }
-    .sa-header-left h1 { font-size: 1.6rem; font-weight: 900; color: var(--sa-brand); letter-spacing: -0.02em; margin: 0; }
-    .sa-header-left p { font-size: 0.9rem; color: #64748b; margin-top: 0.15rem; margin-bottom: 0; }
-
-    /* KPI Grid */
-    .sa-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 1.5rem; }
-    .sa-stat-card { background: white; padding: 1.25rem; border-radius: 20px; border: 1px solid var(--sa-border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); text-align: center; }
-    .sa-stat-card .label { font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 0.25rem; }
-    .sa-stat-card .value { font-size: 2.2rem; font-weight: 900; color: var(--sa-brand); display: block; letter-spacing: -1px; }
-
-    /* Ticker */
-    .sa-ticker-container { background: var(--sa-brand); border-radius: 14px; padding: 10px 0; margin-bottom: 2rem; overflow: hidden; position: relative; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2); }
-    .ticker-wrapper { display: flex; white-space: nowrap; animation: tickerAnimation 40s linear infinite; }
-    .ticker-item { display: flex; align-items: center; padding: 0 50px; font-size: 0.8rem; color: rgba(255,255,255,0.9); font-weight: 600; border-right: 1px solid rgba(255,255,255,0.1); }
-    @keyframes tickerAnimation { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-    /* Unified Toggle */
-    .unified-toggle-container { margin: 1.5rem 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    .sliding-toggle { background: #e2e8f0; padding: 4px; border-radius: 14px; display: flex; position: relative; width: 420px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
-    .toggle-btn { flex: 1; padding: 12px; font-size: 1rem; font-weight: 800; color: #64748b; background: transparent; border: none; z-index: 2; transition: color 0.3s; cursor: pointer; }
-    .toggle-btn.active { color: var(--sa-brand); }
-    .toggle-slider { position: absolute; width: calc(50% - 4px); height: calc(100% - 8px); background: white; border-radius: 12px; top: 4px; left: 4px; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .active-alt ~ .toggle-slider { transform: translateX(100%); }
-
-    /* Chart Rows */
-    .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
-    .chart-row-full { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
-    .sa-card { background: white; padding: 1.5rem; border-radius: 24px; border: 1px solid var(--sa-border); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); }
-    .sa-card-title { font-size: 1rem; font-weight: 800; color: var(--sa-brand); margin-bottom: 1.5rem; border-bottom: 1px solid var(--sa-subtle); padding-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between; }
-    .chart-container { height: 280px !important; width: 100%; display: flex; justify-content: center; align-items: center; }
-
-    /* Tables & Enterprise Alignment */
-    .sa-table-wrapper { border-radius: 20px; overflow: hidden; border: 1px solid var(--sa-border); background: white; }
-    .sa-table { width: 100%; border-collapse: collapse; }
-    .sa-table th { background: var(--sa-subtle); padding: 1rem 1.25rem; font-size: 0.75rem; font-weight: 800; color: #475569; text-transform: uppercase; border-bottom: 2px solid var(--sa-border); }
-    .sa-table td { padding: 1rem 1.25rem; font-size: 0.85rem; color: #334155; border-bottom: 1px solid var(--sa-subtle); vertical-align: middle; }
-    
-    .align-left { text-align: left !important; }
-    .align-center { text-align: center !important; }
-    .align-right { text-align: right !important; }
-
-    .sa-badge { padding: 6px 12px; font-size: 0.7rem; font-weight: 800; border-radius: 6px; text-transform: uppercase; }
-    .sa-badge.open { background: #fee2e2; color: #b91c1c; }
-    .sa-badge.resolved { background: #dcfce7; color: #15803d; }
-    .sa-badge.urgent { background: #ef4444; color: white; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
-
-    .sa-btn-view { padding: 8px 18px; background: var(--sa-brand); color: white; text-decoration: none; font-weight: 800; font-size: 0.8rem; border-radius: 10px; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
-    .sa-btn-view:hover { background: var(--sa-accent); transform: scale(1.05); }
-
-    /* EXPORT UI */
-    .sa-btn-export {
-        background: #f8fafc;
-        border: 1.5px solid var(--sa-border);
-        color: var(--sa-brand);
-        padding: 6px 14px;
-        border-radius: 10px;
-        font-weight: 800;
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.2s;
-    }
-    .sa-btn-export:hover { background: var(--sa-brand); color: white; border-color: var(--sa-brand); }
-
-    /* Audit List UI */
-    .audit-list { display: flex; flex-direction: column; gap: 0.75rem; }
-    .audit-item { display: flex; align-items: flex-start; gap: 1.25rem; padding: 1.25rem; background: var(--sa-subtle); border-radius: 16px; border-left: 4px solid var(--sa-accent); transition: transform 0.2s; }
-    .audit-item:hover { transform: translateX(5px); }
-    .audit-icon { width: 35px; height: 35px; border-radius: 10px; background: white; display: flex; align-items: center; justify-content: center; color: var(--sa-accent); font-size: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; }
-    .audit-info h6 { margin: 0 0 3px; font-weight: 800; color: var(--sa-brand); font-size: 0.85rem; }
-    .audit-info p { margin: 0; font-size: 0.8rem; color: #64748b; }
-
-    @media (max-width: 1400px) { .sa-stats-grid { grid-template-columns: repeat(2, 1fr); } }
-</style>
-
 <div class="sa-container">
-    <!-- EXECUTIVE SIDEBAR (SOLID BLOCK) -->
     <aside class="sa-sidebar">
         <div class="sa-profile">
             <div class="sa-avatar">SA</div>
-            <h6 class="m-0 text-white">System Admin</h6>
-            <small style="opacity: 0.7; font-size: 0.7rem;">Command Center</small>
+            <h6 class="m-0 text-black">System Admin</h6>
+            <small style="font-size: 0.9rem;">Command Center</small>
         </div>
-
         <nav class="sa-nav">
-            <div class="sa-nav-item active" onclick="switchSection('intelligence', this)">
-                <i class="fas fa-microchip"></i> <span>Global Intelligence</span>
-            </div>
-            <div class="sa-nav-item" onclick="switchSection('accounts', this)">
-                <i class="fas fa-users-gear"></i> <span>Accounts Control</span>
-            </div>
-            <div class="sa-nav-item" onclick="switchSection('audit', this)">
-                <i class="fas fa-shield-halved"></i> <span>Audit Trail</span>
-            </div>
-            <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 2rem 0; opacity: 0.2;"></div>
-            <a href="/logout" class="sa-nav-item" style="color: #fb7185;">
+            <% ['intelligence:Global Intelligence:microchip', 'accounts:Accounts Control:users-gear', 'audit:Audit Trail:shield-halved'].forEach(item => { 
+                const [id, label, icon] = item.split(':'); %>
+                <div class="sa-nav-item <%= id === 'intelligence' ? 'active' : '' %>" onclick="switchSection('<%= id %>', this)">
+                    <i class="fas fa-<%= icon %>"></i> <span><%= label %></span>
+                </div>
+            <% }); %>
+            <div class="sa-nav-divider"></div>
+            <a href="/logout" class="sa-nav-item sa-nav-logout">
                 <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
             </a>
         </nav>
     </aside>
 
-    <!-- MAIN DASHBOARD AREA -->
     <main class="sa-main">
-        
-        <!-- SECTION: GLOBAL INTELLIGENCE -->
+        <!-- GLOBAL INTELLIGENCE -->
         <div id="intelligence" class="dashboard-section active">
             <header class="sa-header">
                 <div class="sa-header-left">
@@ -225,33 +32,39 @@
                     <p>Strategic monitoring across the AAI grievance network.</p>
                 </div>
                 <div class="sa-header-right">
-                    <span class="badge bg-success border-0 px-4 py-2 rounded-pill shadow-sm d-inline-flex align-items-center gap-2" style="font-size: 0.7rem; font-weight: 800;">
-                        <span class="spinner-grow spinner-grow-sm" role="status"></span>
-                        SYSTEM ACTIVE
+                    <span class="badge bg-success border-0 px-4 py-2 rounded-pill shadow-sm d-inline-flex align-items-center gap-2" style="font-size: 0.7rem;">
+                        <span class="spinner-grow spinner-grow-sm"></span>SYSTEM ACTIVE
                     </span>
                 </div>
             </header>
 
             <div class="sa-ticker-container">
                 <div class="ticker-wrapper">
-                    <% grievances.slice(0, 10).forEach(g => { %>
+                    <% for(let i = 0; i < 2; i++) { grievances.slice(0, 10).forEach(g => { %>
                         <span class="ticker-item">
                             <i class="fas fa-broadcast-tower me-2"></i>
                             ID: <b><%= g.grievanceId %></b> | SECTOR: <b><%= g.category %></b> | STATE: <b><%= g.status %></b>
                         </span>
-                    <% }) %>
+                    <% }); } %>
                 </div>
             </div>
 
             <div class="sa-stats-grid">
-                <div class="sa-stat-card" style="border-top: 5px solid var(--sa-accent);"><span class="label">Gross Records</span><span class="value"><%= stats.total %></span></div>
-                <div class="sa-stat-card" style="border-top: 5px solid var(--sa-success);"><span class="label">Verified Success</span><span class="value text-success"><%= stats.resolved %></span></div>
-                <div class="sa-stat-card" style="border-top: 5px solid var(--sa-warning);"><span class="label">Active Workflows</span><span class="value"><%= stats.pending %></span></div>
-                <div class="sa-stat-card" style="border-top: 5px solid var(--sa-danger);"><span class="label">Breach Alerts</span><span class="value text-danger"><%= stats.escalated %></span></div>
+                <% const statData = [
+                    {label: 'Gross Records', value: stats.total, color: 'var(--sa-accent)'},
+                    {label: 'Verified Success', value: stats.resolved, color: 'var(--sa-success)', className: 'text-success'},
+                    {label: 'Active Workflows', value: stats.pending, color: 'var(--sa-warning)'},
+                    {label: 'Breach Alerts', value: stats.escalated, color: 'var(--sa-danger)', className: 'text-danger'}
+                ]; statData.forEach(stat => { %>
+                    <div class="sa-stat-card" style="border-top: 5px solid <%= stat.color %>;">
+                        <span class="label"><%= stat.label %></span>
+                        <span class="value <%= stat.className || '' %>"><%= stat.value %></span>
+                    </div>
+                <% }); %>
             </div>
 
             <div class="unified-toggle-container">
-                <span style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em;">Master Control Switch</span>
+                <span class="toggle-label">Master Control Switch</span>
                 <div class="sliding-toggle" id="unifiedToggle">
                     <button class="toggle-btn active" onclick="setCommandContext('all', this)">Issue Registry</button>
                     <button class="toggle-btn" onclick="setCommandContext('escalated', this)">Escalated Alerts</button>
@@ -259,100 +72,100 @@
                 </div>
             </div>
 
-            <!-- ANALYTICS ROW -->
-            <div id="chartView" style="transition: opacity 0.4s ease;">
+            <div id="chartView">
                 <div class="chart-row">
-                    <div class="sa-card">
-                        <div class="sa-card-title">Sector Workload Distribution <i class="fas fa-chart-pie text-primary"></i></div>
-                        <div class="chart-container"><canvas id="loadChart"></canvas></div>
-                    </div>
-                    <div class="sa-card">
-                        <div class="sa-card-title">Protocol State Distribution <i class="fas fa-tasks text-info"></i></div>
-                        <div class="chart-container"><canvas id="statusChart"></canvas></div>
-                    </div>
+                    <% [{id: 'loadChart', title: 'Sector Workload Distribution', icon: 'chart-pie', color: 'primary'},
+                        {id: 'statusChart', title: 'Protocol State Distribution', icon: 'tasks', color: 'info'}].forEach(chart => { %>
+                        <div class="sa-card">
+                            <div class="sa-card-title">
+                                <span><%= chart.title %></span>
+                                <i class="fas fa-<%= chart.icon %> text-<%= chart.color %>"></i>
+                            </div>
+                            <div class="chart-container"><canvas id="<%= chart.id %>"></canvas></div>
+                        </div>
+                    <% }); %>
                 </div>
-                <div class="chart-row-full">
-                    <div class="sa-card">
-                        <div class="sa-card-title">Sector Resolution Performance Matrix <i class="fas fa-chart-bar text-success"></i></div>
-                        <div class="chart-container" style="height: 380px !important;"><canvas id="performanceChart"></canvas></div>
+                <% [{id: 'performanceChart', title: 'Sector Resolution Performance Matrix', icon: 'chart-bar', color: 'success'},
+                    {id: 'velocityChart', title: 'Daily Intake Intelligence (7-Day Trend)', icon: 'bolt', color: 'warning'}].forEach(chart => { %>
+                    <div class="chart-row-full">
+                        <div class="sa-card">
+                            <div class="sa-card-title">
+                                <span><%= chart.title %></span>
+                                <i class="fas fa-<%= chart.icon %> text-<%= chart.color %>"></i>
+                            </div>
+                            <div class="chart-container chart-container-tall"><canvas id="<%= chart.id %>"></canvas></div>
+                        </div>
                     </div>
-                </div>
-                <div class="chart-row-full">
-                    <div class="sa-card">
-                        <div class="sa-card-title">Daily Intake Intelligence (7-Day Trend) <i class="fas fa-bolt text-warning"></i></div>
-                        <div class="chart-container" style="height: 380px !important;"><canvas id="velocityChart"></canvas></div>
-                    </div>
-                </div>
+                <% }); %>
             </div>
 
             <div id="tableViewWrapper">
-                <!-- Master Registry -->
-                <div class="sa-card mb-4" id="archiveSection">
-                    <div class="sa-card-title">
-                        <span>Master Grievance Registry Log</span>
-                        <button class="sa-btn-export" onclick="exportToExcel()">
-                            <i class="fas fa-file-export"></i> EXPORT SYSTEM INTELLIGENCE
-                        </button>
-                    </div>
-                    <div class="sa-table-wrapper">
-                        <table class="sa-table" id="registryTable">
-                            <thead>
-                                <tr>
-                                    <th class="align-left">Registry ID</th>
-                                    <th class="align-left">Sector</th>
-                                    <th class="align-center">Submission Date</th>
-                                    <th class="align-center">Current State</th>
-                                    <th class="align-right">Log Access</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% grievances.forEach(grv => { %>
+                <% const tables = [
+                    {id: 'archiveSection', title: 'Master Grievance Registry Log', rows: grievances, showExport: true},
+                    {id: 'breachSection', title: 'Critical SLA Escalation Queue', rows: grievances.filter(g => g.isEscalated), hidden: true, urgent: true}
+                ]; tables.forEach(table => { %>
+                    <div class="sa-card mb-4 <%= table.hidden ? 'd-none' : '' %>" id="<%= table.id %>">
+                        <div class="sa-card-title">
+                            <span><%= table.title %></span>
+                            <% if(table.showExport) { %>
+                                <button class="sa-btn-export" onclick="exportToExcel()">
+                                    <i class="fas fa-file-export"></i> EXPORT SYSTEM INTELLIGENCE
+                                </button>
+                            <% } else if(table.urgent) { %>
+                                <span class="sa-badge urgent">Response Mandatory</span>
+                            <% } %>
+                        </div>
+                        <div class="sa-table-wrapper">
+                            <table class="sa-table" <%= table.showExport ? 'id="registryTable"' : '' %>>
+                                <thead>
                                     <tr>
-                                        <td class="align-left fw-bold text-primary"><%= grv.grievanceId %></td>
-                                        <td class="align-left"><%= grv.category %></td>
-                                        <td class="align-center"><%= new Date(grv.createdAt).toLocaleDateString('en-IN') %></td>
-                                        <td class="align-center"><span class="sa-badge <%= grv.status.toLowerCase() %>"><%= grv.status.replace('_', ' ') %></span></td>
-                                        <td class="align-right"><a href="/admin/grievances/<%= grv.grievanceId %>" class="sa-btn-view"><i class="fas fa-eye me-1"></i> View</a></td>
+                                        <% const headers = table.urgent ? 
+                                            ['Transmission ID:left', 'Target Dept:left', 'Severity:center', 'Timestamp:center', 'Control:right'] :
+                                            ['Registry ID:left', 'Sector:left', 'Submission Date:center', 'Current State:center', 'Log Access:right'];
+                                        headers.forEach(h => { const [label, align] = h.split(':'); %>
+                                            <th class="align-<%= align %>"><%= label %></th>
+                                        <% }); %>
                                     </tr>
-                                <% }) %>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <% table.rows.forEach(g => { %>
+                                        <tr>
+                                            <td class="align-left fw-bold text-primary"><%= g.grievanceId %></td>
+                                            <td class="align-left <%= table.urgent ? 'fw-bold' : '' %>"><%= g.category %></td>
+                                            <td class="align-center">
+                                                <% if(table.urgent) { %>
+                                                    <span class="sa-badge urgent">High Impact</span>
+                                                <% } else { %>
+                                                    <%= new Date(g.createdAt).toLocaleDateString('en-IN') %>
+                                                <% } %>
+                                            </td>
+                                            <td class="align-center">
+                                                <% if(table.urgent) { %>
+                                                    <%= new Date(g.createdAt).toLocaleDateString() %>
+                                                <% } else { %>
+                                                    <span class="sa-badge <%= g.status.toLowerCase().replace('_', '-') %>">
+                                                        <%= g.status.replace('_', ' ') %>
+                                                    </span>
+                                                <% } %>
+                                            </td>
+                                            <td class="align-right">
+                                                <a href="/admin/grievances/<%= g.grievanceId %>" class="sa-btn-view">
+                                                    <% if(table.urgent) { %>Take Control<% } else { %>
+                                                        <i class="fas fa-eye me-1"></i> View
+                                                    <% } %>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Breach alerts -->
-                <div class="sa-card mb-4 d-none" id="breachSection">
-                    <div class="sa-card-title">Critical SLA Escalation Queue <span class="sa-badge urgent">Response Mandatory</span></div>
-                    <div class="sa-table-wrapper">
-                        <table class="sa-table">
-                            <thead>
-                                <tr>
-                                    <th class="align-left">Transmission ID</th>
-                                    <th class="align-left">Target Dept</th>
-                                    <th class="align-center">Severity</th>
-                                    <th class="align-center">Timestamp</th>
-                                    <th class="align-right">Control</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% const escalatedData = grievances.filter(g => g.isEscalated); %>
-                                <% escalatedData.forEach(g => { %>
-                                    <tr>
-                                        <td class="align-left fw-bold text-primary"><%= g.grievanceId %></td>
-                                        <td class="align-left fw-bold"><%= g.category %></td>
-                                        <td class="align-center"><span class="sa-badge urgent">High Impact</span></td>
-                                        <td class="align-center"><%= new Date(g.createdAt).toLocaleDateString() %></td>
-                                        <td class="align-right"><a href="/admin/grievances/<%= g.grievanceId %>" class="sa-btn-view">Take Control</a></td>
-                                    </tr>
-                                <% }) %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <% }); %>
             </div>
         </div>
 
-        <!-- SECTION: ACCOUNTS CONTROL -->
+        <!-- ACCOUNTS CONTROL -->
         <div id="accounts" class="dashboard-section">
             <header class="sa-header">
                 <div class="sa-header-left">
@@ -360,7 +173,7 @@
                     <p>Manage administrative credentials and departmental access points.</p>
                 </div>
                 <div class="sa-header-right">
-                    <a href="/admin/create-department" class="sa-btn-view" style="padding: 12px 24px; background: var(--sa-accent);">
+                    <a href="/admin/create-department" class="sa-btn-view text-white" style="padding: 12px 24px; background: var(--sa-primary);">
                         <i class="fas fa-user-plus me-2"></i> Provision New Admin
                     </a>
                 </div>
@@ -371,170 +184,143 @@
                     <table class="sa-table">
                         <thead>
                             <tr>
-                                <th class="align-left">Department Name</th>
-                                <th class="align-left">Official Email</th>
-                                <th class="align-center">Role Level</th>
-                                <th class="align-center">System Status</th>
-                                <th class="align-right">Actions</th>
+                                <% ['Department Name:left', 'Official Email:left', 'Role Level:center', 'System Status:center', 'Actions:right'].forEach(h => { 
+                                    const [label, align] = h.split(':'); %>
+                                    <th class="align-<%= align %>"><%= label %></th>
+                                <% }); %>
                             </tr>
                         </thead>
-                        <tbody id="accountsListBody">
-                            <!-- Populated via Script -->
-                        </tbody>
+                        <tbody id="accountsListBody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION: AUDIT TRAIL -->
+        <!-- AUDIT TRAIL -->
         <div id="audit" class="dashboard-section">
             <header class="sa-header">
                 <div class="sa-header-left">
                     <h1>System Audit Trail</h1>
                     <p>Immutable log of administrative decisions and security events.</p>
                 </div>
-                <div class="sa-header-right">
-                    <span class="badge bg-info border-0 px-4 py-2 rounded-pill shadow-sm" style="font-size: 0.7rem; font-weight: 800; color: white;">
-                        ENCRYPTED LOGGING ACTIVE
-                    </span>
-                </div>
             </header>
             <div class="sa-card">
                 <div class="sa-card-title">Operational Event Ledger</div>
-                <div class="audit-list" id="auditLogContainer">
-                    <!-- Populated via Script -->
-                </div>
+                <div class="audit-list" id="auditLogContainer"></div>
             </div>
         </div>
     </main>
 </div>
 
 <script>
-    function switchSection(sectionId, btn) {
-        document.querySelectorAll('.dashboard-section').forEach(sec => sec.classList.remove('active'));
-        document.getElementById(sectionId).classList.add('active');
-        document.querySelectorAll('.sa-nav-item').forEach(nav => nav.classList.remove('active'));
-        btn.classList.add('active');
-    }
+const switchSection = (id, btn) => {
+    document.querySelectorAll('.dashboard-section, .sa-nav-item').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+};
 
-    const deptLabels = <%- JSON.stringify(chartData.labels) %>;
-    const rawData = <%- JSON.stringify(grievances) %>;
+const deptLabels = <%- JSON.stringify(chartData.labels) %>, rawData = <%- JSON.stringify(grievances) %>;
 
-    // Real-time Mapping
-    const populateAccounts = () => {
-        const body = document.getElementById('accountsListBody');
-        body.innerHTML = deptLabels.map(label => `
-            <tr>
-                <td class="align-left fw-bold">${label} Sector</td>
-                <td class="align-left">${label.toLowerCase().replace(' ', '.')}@aai.aero</td>
-                <td class="align-center"><span class="badge bg-secondary">DEPT_ADMIN</span></td>
-                <td class="align-center"><span class="text-success fw-bold"><i class="fas fa-circle me-1" style="font-size: 8px;"></i> ONLINE</span></td>
-                <td class="align-right">
-                    <button class="btn btn-sm btn-light border me-1"><i class="fas fa-user-pen"></i></button>
-                    <button class="btn btn-sm btn-light border text-danger"><i class="fas fa-user-lock"></i></button>
-                </td>
-            </tr>
-        `).join('');
-    };
+const populateAccounts = () => {
+    document.getElementById('accountsListBody').innerHTML = deptLabels.map(label => `
+        <tr>
+            <td class="align-left fw-bold">${label} Sector</td>
+            <td class="align-left">${label.toLowerCase().replace(' ', '.')}@aai.aero</td>
+            <td class="align-center"><span class="badge bg-secondary">DEPT_ADMIN</span></td>
+            <td class="align-center"><span class="text-success fw-bold"><i class="fas fa-circle me-1" style="font-size: 8px;"></i> ONLINE</span></td>
+            <td class="align-right">
+                ${['user-pen', 'user-lock'].map((icon, i) => `<button class="btn btn-sm btn-light border ${i ? 'text-danger' : 'me-1'}"><i class="fas fa-${icon}"></i></button>`).join('')}
+            </td>
+        </tr>
+    `).join('');
+};
 
-    const populateAuditLogs = () => {
-        const container = document.getElementById('auditLogContainer');
-        container.innerHTML = rawData.slice(0, 10).map(g => `
-            <div class="audit-item">
-                <div class="audit-icon"><i class="fas fa-shield-halved"></i></div>
-                <div class="audit-info">
-                    <h6>Registry Modification</h6>
-                    <p><b>Registry Alert</b>: Grievance <b>${g.grievanceId}</b> moved to <b>${g.status}</b> state in Sector: ${g.category}.</p>
-                    <small class="text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">TS: ${new Date(g.updatedAt).toLocaleTimeString()}</small>
-                </div>
+const populateAuditLogs = () => {
+    document.getElementById('auditLogContainer').innerHTML = rawData.slice(0, 10).map(g => `
+        <div class="audit-item">
+            <div class="audit-icon"><i class="fas fa-shield-halved"></i></div>
+            <div class="audit-info">
+                <h6>Registry Modification</h6>
+                <p><b>Registry Alert</b>: Grievance <b>${g.grievanceId}</b> moved to <b>${g.status}</b> state in Sector: ${g.category}.</p>
+                <small class="text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">TS: ${new Date(g.updatedAt).toLocaleTimeString()}</small>
             </div>
-        `).join('');
-    };
+        </div>
+    `).join('');
+};
 
-    const getVelocityData = (data) => {
-        const labels = [];
-        for (let i = 6; i >= 0; i--) {
-            const d = new Date(); d.setDate(d.getDate() - i);
-            labels.push(d.toLocaleDateString('en-IN', { weekday: 'short' }));
-        }
-        const counts = labels.map((_, idx) => {
-            const d = new Date(); d.setDate(d.getDate() - (6 - idx));
-            return data.filter(g => new Date(g.createdAt).toDateString() === d.toDateString()).length;
-        });
-        return { labels, counts };
-    };
-
-    const dataContexts = {
-        all: {
-            load: <%- JSON.stringify(chartData.counts) %>,
-            resolved: deptLabels.map(label => rawData.filter(g => g.category === label && g.status === 'RESOLVED').length),
-            pending: deptLabels.map(label => rawData.filter(g => g.category === label && (g.status === 'OPEN' || g.status === 'UNDER_REVIEW')).length),
-            status: [rawData.filter(g => g.status === 'OPEN').length, rawData.filter(g => g.status === 'UNDER_REVIEW').length, rawData.filter(g => g.status === 'RESOLVED').length, rawData.filter(g => g.status === 'CLOSED').length],
-            velocity: getVelocityData(rawData)
-        },
-        escalated: {
-            load: deptLabels.map(label => rawData.filter(g => g.category === label && g.isEscalated).length),
-            resolved: deptLabels.map(() => 0),
-            pending: deptLabels.map(label => rawData.filter(g => g.category === label && g.isEscalated).length),
-            status: [rawData.filter(g => g.status === 'OPEN' && g.isEscalated).length, rawData.filter(g => g.status === 'UNDER_REVIEW' && g.isEscalated).length, 0, 0],
-            velocity: getVelocityData(rawData.filter(g => g.isEscalated))
-        }
-    };
-
-    let charts = {};
-    const chartColors = ['#0f172a', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#f43f5e'];
-
-    function initCharts() {
-        const circularOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true, font: { size: 11, weight: '800' }, padding: 25 } } }, scales: { x: { display: false }, y: { display: false } } };
-        const trendOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true, font: { size: 11, weight: '800' }, padding: 25 } } }, scales: { x: { grid: { display: false }, ticks: { font: { weight: '700' } } }, y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { weight: '700' } } } } };
-        
-        charts.load = new Chart(document.getElementById('loadChart'), { type: 'doughnut', data: { labels: deptLabels, datasets: [{ data: dataContexts.all.load, backgroundColor: chartColors, borderWidth: 0 }] }, options: { ...circularOptions, cutout: '80%' } });
-        charts.status = new Chart(document.getElementById('statusChart'), { type: 'pie', data: { labels: ['Open', 'Review', 'Resolved', 'Closed'], datasets: [{ data: dataContexts.all.status, backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#94a3b8'], borderWidth: 0 }] }, options: circularOptions });
-        charts.performance = new Chart(document.getElementById('performanceChart'), { type: 'bar', data: { labels: deptLabels, datasets: [{ label: 'Resolved', data: dataContexts.all.resolved, backgroundColor: '#10b981', borderRadius: 6 }, { label: 'Processing', data: dataContexts.all.pending, backgroundColor: '#e2e8f0', borderRadius: 6 }] }, options: { ...trendOptions, scales: { ...trendOptions.scales, x: { ...trendOptions.scales.x, stacked: true }, y: { ...trendOptions.scales.y, stacked: true } } } });
-        charts.velocity = new Chart(document.getElementById('velocityChart'), { type: 'line', data: { labels: dataContexts.all.velocity.labels, datasets: [{ label: 'Incoming', data: dataContexts.all.velocity.counts, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4, pointRadius: 6, pointBackgroundColor: '#fff', pointBorderWidth: 3 }] }, options: trendOptions });
+const getVelocityData = data => {
+    const labels = [], counts = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        labels.push(d.toLocaleDateString('en-IN', {weekday: 'short'}));
+        counts.push(data.filter(g => new Date(g.createdAt).toDateString() === d.toDateString()).length);
     }
+    return {labels, counts};
+};
 
-    function setCommandContext(type, btn) {
-        const chartWrapper = document.getElementById('chartView');
-        const toggle = document.getElementById('unifiedToggle');
-        const archive = document.getElementById('archiveSection');
-        const breach = document.getElementById('breachSection');
-        chartWrapper.style.opacity = '0.3';
-        toggle.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        type === 'escalated' ? toggle.classList.add('active-alt') : toggle.classList.remove('active-alt');
-        
-        setTimeout(() => {
-            const ctx = dataContexts[type];
-            charts.load.data.datasets[0].data = ctx.load; charts.load.update();
-            charts.status.data.datasets[0].data = ctx.status; charts.status.update();
-            charts.performance.data.datasets[0].data = ctx.resolved; charts.performance.data.datasets[1].data = ctx.pending; charts.performance.update();
-            charts.velocity.data.datasets[0].data = ctx.velocity.counts; charts.velocity.update();
-            if(type === 'escalated') { archive.classList.add('d-none'); breach.classList.remove('d-none'); } 
-            else { breach.classList.add('d-none'); archive.classList.remove('d-none'); }
-            chartWrapper.style.opacity = '1';
-        }, 300);
+const dataContexts = {
+    all: {
+        load: <%- JSON.stringify(chartData.counts) %>,
+        resolved: deptLabels.map(l => rawData.filter(g => g.category === l && g.status === 'RESOLVED').length),
+        pending: deptLabels.map(l => rawData.filter(g => g.category === l && ['OPEN', 'UNDER_REVIEW'].includes(g.status)).length),
+        status: ['OPEN', 'UNDER_REVIEW', 'RESOLVED', 'CLOSED'].map(s => rawData.filter(g => g.status === s).length),
+        velocity: getVelocityData(rawData)
+    },
+    escalated: {
+        load: deptLabels.map(l => rawData.filter(g => g.category === l && g.isEscalated).length),
+        resolved: deptLabels.map(() => 0),
+        pending: deptLabels.map(l => rawData.filter(g => g.category === l && g.isEscalated).length),
+        status: ['OPEN', 'UNDER_REVIEW'].map(s => rawData.filter(g => g.status === s && g.isEscalated).length).concat([0, 0]),
+        velocity: getVelocityData(rawData.filter(g => g.isEscalated))
     }
+};
 
-    function exportToExcel() {
-        const table = document.getElementById("registryTable");
-        let csv = [];
-        for (let i = 0; i < table.rows.length; i++) {
-            let row = [], cols = table.rows[i].querySelectorAll("td, th");
-            for (let j = 0; j < cols.length - 1; j++) row.push(cols[j].innerText.replace(/,/g, ""));
-            csv.push(row.join(","));
-        }
-        const blob = new Blob([csv.join("\n")], { type: "text/csv" });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.setAttribute("hidden", ""); a.setAttribute("href", url);
-        a.setAttribute("download", "AAI_Registry_Report.csv");
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+let charts = {};
+const chartColors = ['#0f172a', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#f43f5e'];
+
+const initCharts = () => {
+    const circularOpts = {responsive: true, maintainAspectRatio: false, plugins: {legend: {position: 'bottom', labels: {boxWidth: 12, usePointStyle: true, font: {size: 11}, padding: 25}}}};
+    const trendOpts = {...circularOpts, scales: {x: {grid: {display: false}, ticks: {font: {weight: '700'}}}, y: {beginAtZero: true, grid: {color: '#f1f5f9'}, ticks: {font: {weight: '700'}}}}};
+    
+    charts.load = new Chart(document.getElementById('loadChart'), {type: 'doughnut', data: {labels: deptLabels, datasets: [{data: dataContexts.all.load, backgroundColor: chartColors, borderWidth: 0}]}, options: {...circularOpts, cutout: '80%'}});
+    charts.status = new Chart(document.getElementById('statusChart'), {type: 'pie', data: {labels: ['Open', 'Review', 'Resolved', 'Closed'], datasets: [{data: dataContexts.all.status, backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#94a3b8'], borderWidth: 0}]}, options: circularOpts});
+    charts.performance = new Chart(document.getElementById('performanceChart'), {type: 'bar', data: {labels: deptLabels, datasets: [{label: 'Resolved', data: dataContexts.all.resolved, backgroundColor: '#10b981', borderRadius: 6}, {label: 'Processing', data: dataContexts.all.pending, backgroundColor: '#e2e8f0', borderRadius: 6}]}, options: {...trendOpts, scales: {x: {...trendOpts.scales.x, stacked: true}, y: {...trendOpts.scales.y, stacked: true}}}});
+    charts.velocity = new Chart(document.getElementById('velocityChart'), {type: 'line', data: {labels: dataContexts.all.velocity.labels, datasets: [{label: 'Incoming', data: dataContexts.all.velocity.counts, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4, pointRadius: 6, pointBackgroundColor: '#fff', pointBorderWidth: 3}]}, options: trendOpts});
+};
+
+const setCommandContext = (type, btn) => {
+    const chartWrapper = document.getElementById('chartView'), toggle = document.getElementById('unifiedToggle');
+    chartWrapper.style.opacity = '0.3';
+    toggle.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    toggle.classList.toggle('active-alt', type === 'escalated');
+    
+    setTimeout(() => {
+        const ctx = dataContexts[type];
+        charts.load.data.datasets[0].data = ctx.load; charts.load.update();
+        charts.status.data.datasets[0].data = ctx.status; charts.status.update();
+        charts.performance.data.datasets[0].data = ctx.resolved; charts.performance.data.datasets[1].data = ctx.pending; charts.performance.update();
+        charts.velocity.data.datasets[0].data = ctx.velocity.counts; charts.velocity.update();
+        document.getElementById('archiveSection').classList.toggle('d-none', type === 'escalated');
+        document.getElementById('breachSection').classList.toggle('d-none', type !== 'escalated');
+        chartWrapper.style.opacity = '1';
+    }, 300);
+};
+
+const exportToExcel = () => {
+    const table = document.getElementById("registryTable"), csv = [];
+    for (let i = 0; i < table.rows.length; i++) {
+        const row = [], cols = table.rows[i].querySelectorAll("td, th");
+        for (let j = 0; j < cols.length - 1; j++) row.push(cols[j].innerText.replace(/,/g, ""));
+        csv.push(row.join(","));
     }
+    const blob = new Blob([csv.join("\n")], {type: "text/csv"}), url = window.URL.createObjectURL(blob), a = document.createElement("a");
+    a.setAttribute("hidden", ""); a.setAttribute("href", url); a.setAttribute("download", "AAI_Registry_Report.csv");
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+};
 
-    document.addEventListener('DOMContentLoaded', () => {
-        initCharts();
-        populateAccounts();
-        populateAuditLogs();
-    });
+document.addEventListener('DOMContentLoaded', () => {
+    initCharts(); populateAccounts(); populateAuditLogs();
+});
 </script>
