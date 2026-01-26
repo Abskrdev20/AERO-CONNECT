@@ -40,6 +40,7 @@ const authRoutes = require("./routes/auth");
 const grievanceRoutes = require("./routes/grievance");
 const adminAuthRoutes = require("./routes/adminAuth");
 const adminRoutes = require("./routes/admin");
+const adminController = require("./controllers/adminController");
 
 app.use("/auth", authRoutes);
 app.use("/grievances", grievanceRoutes);
@@ -105,13 +106,12 @@ app.get("/admin/dashboard", async (req, res) => {
       return res.redirect("/login/admin");
     }
 
-    // 🏆 SUPERADMIN REDIRECTION (Has exclusive access to analytics & department creation)
+    // 🏆 SUPERADMIN REDIRECTION
     if (admin.role === "SUPERADMIN") {
-      const adminController = require("./controllers/adminController");
       return adminController.getSuperAdminDashboard(req, res);
     }
 
-    // 🏢 DEPARTMENT ADMIN VIEW (Normal admin dashboard)
+    // 🏢 DEPARTMENT ADMIN VIEW
     const grievances = await Grievance.find({ category: admin.name })
       .sort({ createdAt: -1 })
       .lean();
@@ -119,7 +119,7 @@ app.get("/admin/dashboard", async (req, res) => {
     res.render("admin/dashboard", {
       department: admin,
       grievances,
-      role: admin.role, // Passing role to template
+      role: admin.role,
       stats: { 
         total: grievances.length, 
         resolved: grievances.filter(g => g.status === "RESOLVED").length 
@@ -129,6 +129,12 @@ app.get("/admin/dashboard", async (req, res) => {
     console.error("Admin Dashboard Error:", err);
     res.redirect("/login/admin");
   }
+});
+
+/* ================= EXCLUSIVE SUPERADMIN ROUTE ================= */
+app.get("/admin/super-dashboard", async (req, res) => {
+  if (req.session.role !== "SUPERADMIN") return res.redirect("/admin/dashboard");
+  return adminController.getSuperAdminDashboard(req, res);
 });
 
 /* ================= ADMIN ACTION ROUTES ================= */
@@ -175,7 +181,6 @@ app.get("/grievances/:grievanceId", async (req, res) => {
   res.render("grievance-detail", { grievance, isAdmin: false });
 });
 
-/* ✅ RESTRICTED: Only for SUPERADMIN */
 app.get("/admin/create-department", (req, res) => {
   if (!req.session.adminId || req.session.role !== "SUPERADMIN") {
     return res.redirect("/admin/dashboard");

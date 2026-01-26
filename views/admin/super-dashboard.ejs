@@ -1,8 +1,10 @@
 <% layout('layouts/boilerplate') -%>
+
 <link rel="stylesheet" href="/css/super-admin.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="sa-container">
+    <!-- SIDEBAR NAVIGATION -->
     <aside class="sa-sidebar">
         <div class="sa-profile">
             <div class="sa-avatar">SA</div>
@@ -10,13 +12,19 @@
             <small style="font-size: 0.9rem;">Command Center</small>
         </div>
         <nav class="sa-nav">
-            <% ['intelligence:Global Intelligence:microchip', 'accounts:Accounts Control:users-gear', 'audit:Audit Trail:shield-halved'].forEach(item => { 
-                const [id, label, icon] = item.split(':'); %>
-                <div class="sa-nav-item <%= id === 'intelligence' ? 'active' : '' %>" onclick="switchSection('<%= id %>', this)">
-                    <i class="fas fa-<%= icon %>"></i> <span><%= label %></span>
-                </div>
-            <% }); %>
+            <div class="sa-nav-item active" onclick="switchSection('intelligence', this)">
+                <i class="fas fa-microchip"></i> <span>Global Intelligence</span>
+            </div>
+            <div class="sa-nav-item" onclick="switchSection('accounts', this)">
+                <i class="fas fa-users-gear"></i> <span>Accounts Control</span>
+            </div>
+            <div class="sa-nav-item" onclick="switchSection('audit', this)">
+                <i class="fas fa-shield-halved"></i> <span>Audit Trail</span>
+            </div>
             <div class="sa-nav-divider"></div>
+            <a href="/admin/create-department" class="sa-nav-item">
+                <i class="fas fa-plus-circle"></i> <span>Add Account</span>
+            </a>
             <a href="/logout" class="sa-nav-item sa-nav-logout">
                 <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
             </a>
@@ -24,7 +32,7 @@
     </aside>
 
     <main class="sa-main">
-        <!-- GLOBAL INTELLIGENCE -->
+        <!-- SECTION 1: GLOBAL INTELLIGENCE (ANALYTICS) -->
         <div id="intelligence" class="dashboard-section active">
             <header class="sa-header">
                 <div class="sa-header-left">
@@ -38,6 +46,7 @@
                 </div>
             </header>
 
+            <!-- LIVE TICKER -->
             <div class="sa-ticker-container">
                 <div class="ticker-wrapper">
                     <% for(let i = 0; i < 2; i++) { grievances.slice(0, 10).forEach(g => { %>
@@ -49,6 +58,7 @@
                 </div>
             </div>
 
+            <!-- STATS GRID -->
             <div class="sa-stats-grid">
                 <% const statData = [
                     {label: 'Gross Records', value: stats.total, color: 'var(--sa-accent)'},
@@ -63,109 +73,79 @@
                 <% }); %>
             </div>
 
-            <div class="unified-toggle-container">
-                <span class="toggle-label">Master Control Switch</span>
-                <div class="sliding-toggle" id="unifiedToggle">
-                    <button class="toggle-btn active" onclick="setCommandContext('all', this)">Issue Registry</button>
-                    <button class="toggle-btn" onclick="setCommandContext('escalated', this)">Escalated Alerts</button>
-                    <div class="toggle-slider"></div>
-                </div>
-            </div>
-
+            <!-- CHARTS VIEW -->
             <div id="chartView">
                 <div class="chart-row">
-                    <% [{id: 'loadChart', title: 'Sector Workload Distribution', icon: 'chart-pie', color: 'primary'},
-                        {id: 'statusChart', title: 'Protocol State Distribution', icon: 'tasks', color: 'info'}].forEach(chart => { %>
-                        <div class="sa-card">
-                            <div class="sa-card-title">
-                                <span><%= chart.title %></span>
-                                <i class="fas fa-<%= chart.icon %> text-<%= chart.color %>"></i>
-                            </div>
-                            <div class="chart-container"><canvas id="<%= chart.id %>"></canvas></div>
+                    <div class="sa-card">
+                        <div class="sa-card-title">
+                            <span>Sector Workload Distribution</span>
+                            <i class="fas fa-chart-pie text-primary"></i>
                         </div>
-                    <% }); %>
-                </div>
-                <% [{id: 'performanceChart', title: 'Sector Resolution Performance Matrix', icon: 'chart-bar', color: 'success'},
-                    {id: 'velocityChart', title: 'Daily Intake Intelligence (7-Day Trend)', icon: 'bolt', color: 'warning'}].forEach(chart => { %>
-                    <div class="chart-row-full">
-                        <div class="sa-card">
-                            <div class="sa-card-title">
-                                <span><%= chart.title %></span>
-                                <i class="fas fa-<%= chart.icon %> text-<%= chart.color %>"></i>
-                            </div>
-                            <div class="chart-container chart-container-tall"><canvas id="<%= chart.id %>"></canvas></div>
-                        </div>
+                        <div class="chart-container"><canvas id="loadChart"></canvas></div>
                     </div>
-                <% }); %>
+                    <div class="sa-card">
+                        <div class="sa-card-title">
+                            <span>Protocol State Distribution</span>
+                            <i class="fas fa-tasks text-info"></i>
+                        </div>
+                        <div class="chart-container"><canvas id="statusChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="chart-row-full">
+                    <div class="sa-card">
+                        <div class="sa-card-title">
+                            <span>Sector Performance Matrix</span>
+                            <i class="fas fa-chart-bar text-success"></i>
+                        </div>
+                        <div class="chart-container chart-container-tall"><canvas id="performanceChart"></canvas></div>
+                    </div>
+                </div>
             </div>
 
-            <div id="tableViewWrapper">
-                <% const tables = [
-                    {id: 'archiveSection', title: 'Master Grievance Registry Log', rows: grievances, showExport: true},
-                    {id: 'breachSection', title: 'Critical SLA Escalation Queue', rows: grievances.filter(g => g.isEscalated), hidden: true, urgent: true}
-                ]; tables.forEach(table => { %>
-                    <div class="sa-card mb-4 <%= table.hidden ? 'd-none' : '' %>" id="<%= table.id %>">
-                        <div class="sa-card-title">
-                            <span><%= table.title %></span>
-                            <% if(table.showExport) { %>
-                                <button class="sa-btn-export" onclick="exportToExcel()">
-                                    <i class="fas fa-file-export"></i> EXPORT SYSTEM INTELLIGENCE
-                                </button>
-                            <% } else if(table.urgent) { %>
-                                <span class="sa-badge urgent">Response Mandatory</span>
-                            <% } %>
-                        </div>
-                        <div class="sa-table-wrapper">
-                            <table class="sa-table" <%= table.showExport ? 'id="registryTable"' : '' %>>
-                                <thead>
-                                    <tr>
-                                        <% const headers = table.urgent ? 
-                                            ['Transmission ID:left', 'Target Dept:left', 'Severity:center', 'Timestamp:center', 'Control:right'] :
-                                            ['Registry ID:left', 'Sector:left', 'Submission Date:center', 'Current State:center', 'Log Access:right'];
-                                        headers.forEach(h => { const [label, align] = h.split(':'); %>
-                                            <th class="align-<%= align %>"><%= label %></th>
-                                        <% }); %>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% table.rows.forEach(g => { %>
-                                        <tr>
-                                            <td class="align-left fw-bold text-primary"><%= g.grievanceId %></td>
-                                            <td class="align-left <%= table.urgent ? 'fw-bold' : '' %>"><%= g.category %></td>
-                                            <td class="align-center">
-                                                <% if(table.urgent) { %>
-                                                    <span class="sa-badge urgent">High Impact</span>
-                                                <% } else { %>
-                                                    <%= new Date(g.createdAt).toLocaleDateString('en-IN') %>
-                                                <% } %>
-                                            </td>
-                                            <td class="align-center">
-                                                <% if(table.urgent) { %>
-                                                    <%= new Date(g.createdAt).toLocaleDateString() %>
-                                                <% } else { %>
-                                                    <span class="sa-badge <%= g.status.toLowerCase().replace('_', '-') %>">
-                                                        <%= g.status.replace('_', ' ') %>
-                                                    </span>
-                                                <% } %>
-                                            </td>
-                                            <td class="align-right">
-                                                <a href="/admin/grievances/<%= g.grievanceId %>" class="sa-btn-view">
-                                                    <% if(table.urgent) { %>Take Control<% } else { %>
-                                                        <i class="fas fa-eye me-1"></i> View
-                                                    <% } %>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <% }); %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                <% }); %>
+            <!-- MASTER REGISTRY TABLE -->
+            <div class="sa-card mb-4" id="archiveSection">
+                <div class="sa-card-title">
+                    <span>Master Grievance Registry Log</span>
+                    <button class="sa-btn-export" onclick="exportToExcel()">
+                        <i class="fas fa-file-export"></i> EXPORT REGISTRY
+                    </button>
+                </div>
+                <div class="sa-table-wrapper">
+                    <table class="sa-table" id="registryTable">
+                        <thead>
+                            <tr>
+                                <th>Registry ID</th>
+                                <th>Sector</th>
+                                <th class="text-center">Submission Date</th>
+                                <th class="text-center">Current State</th>
+                                <th class="text-end">Log Access</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% grievances.forEach(g => { %>
+                                <tr>
+                                    <td><b><%= g.grievanceId %></b></td>
+                                    <td><%= g.category %></td>
+                                    <td class="text-center"><%= new Date(g.createdAt).toLocaleDateString('en-IN') %></td>
+                                    <td class="text-center">
+                                        <span class="sa-badge <%= g.status.toLowerCase().replace('_', '-') %>">
+                                            <%= g.status.replace('_', ' ') %>
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="/admin/grievances/<%= g.grievanceId %>" class="sa-btn-view">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- ACCOUNTS CONTROL -->
+        <!-- SECTION 2: ACCOUNTS CONTROL (REAL-TIME) -->
         <div id="accounts" class="dashboard-section">
             <header class="sa-header">
                 <div class="sa-header-left">
@@ -173,7 +153,7 @@
                     <p>Manage administrative credentials and departmental access points.</p>
                 </div>
                 <div class="sa-header-right">
-                    <a href="/admin/create-department" class="sa-btn-view text-white" style="padding: 12px 24px; background: var(--sa-primary);">
+                    <a href="/admin/create-department" class="sa-btn-primary" style="text-decoration: none; padding: 12px 24px; background: var(--sa-primary); color: white; border-radius: 8px;">
                         <i class="fas fa-user-plus me-2"></i> Provision New Admin
                     </a>
                 </div>
@@ -184,19 +164,50 @@
                     <table class="sa-table">
                         <thead>
                             <tr>
-                                <% ['Department Name:left', 'Official Email:left', 'Role Level:center', 'System Status:center', 'Actions:right'].forEach(h => { 
-                                    const [label, align] = h.split(':'); %>
-                                    <th class="align-<%= align %>"><%= label %></th>
-                                <% }); %>
+                                <th>Department Name</th>
+                                <th>Official Email</th>
+                                <th class="text-center">Role Level</th>
+                                <th class="text-center">System Status</th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="accountsListBody"></tbody>
+                        <tbody>
+                            <% if (typeof departments !== 'undefined' && departments && departments.length > 0) { %>
+                                <% departments.forEach(dept => { %>
+                                    <tr>
+                                        <td><b><%= dept.name %></b></td>
+                                        <td><%= dept.email %></td>
+                                        <td class="text-center">
+                                            <span class="badge <%= dept.role === 'SUPERADMIN' ? 'bg-danger' : 'bg-primary' %>">
+                                                <%= dept.role %>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="text-success fw-bold">
+                                                <i class="fas fa-circle me-1" style="font-size: 8px;"></i> ONLINE
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <form action="/admin/accounts/<%= dept._id %>/delete" method="POST" onsubmit="return confirm('DANGER: Permanently delete this account?')" style="display:inline;">
+                                                <button type="submit" class="btn btn-sm btn-light border text-danger">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted p-4">No accounts detected in database.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- AUDIT TRAIL -->
+        <!-- SECTION 3: AUDIT TRAIL -->
         <div id="audit" class="dashboard-section">
             <header class="sa-header">
                 <div class="sa-header-left">
@@ -206,121 +217,133 @@
             </header>
             <div class="sa-card">
                 <div class="sa-card-title">Operational Event Ledger</div>
-                <div class="audit-list" id="auditLogContainer"></div>
+                <div class="audit-list" id="auditLogContainer">
+                    <!-- Logs populated via JS -->
+                </div>
             </div>
         </div>
     </main>
 </div>
 
 <script>
-const switchSection = (id, btn) => {
-    document.querySelectorAll('.dashboard-section, .sa-nav-item').forEach(el => el.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    btn.classList.add('active');
-};
+    // Tab switching functionality
+    function switchSection(id, btn) {
+        document.querySelectorAll('.dashboard-section').forEach(section => section.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.sa-nav-item').forEach(item => item.classList.remove('active'));
+        btn.classList.add('active');
+    }
 
-const deptLabels = <%- JSON.stringify(chartData.labels) %>, rawData = <%- JSON.stringify(grievances) %>;
+    // Pass server data to client script
+    const deptLabels = <%- JSON.stringify(chartData.labels) %>;
+    const rawGrievances = <%- JSON.stringify(grievances) %>;
 
-const populateAccounts = () => {
-    document.getElementById('accountsListBody').innerHTML = deptLabels.map(label => `
-        <tr>
-            <td class="align-left fw-bold">${label} Sector</td>
-            <td class="align-left">${label.toLowerCase().replace(' ', '.')}@aai.aero</td>
-            <td class="align-center"><span class="badge bg-secondary">DEPT_ADMIN</span></td>
-            <td class="align-center"><span class="text-success fw-bold"><i class="fas fa-circle me-1" style="font-size: 8px;"></i> ONLINE</span></td>
-            <td class="align-right">
-                ${['user-pen', 'user-lock'].map((icon, i) => `<button class="btn btn-sm btn-light border ${i ? 'text-danger' : 'me-1'}"><i class="fas fa-${icon}"></i></button>`).join('')}
-            </td>
-        </tr>
-    `).join('');
-};
+    function initCharts() {
+        const circularOpts = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+            }
+        };
 
-const populateAuditLogs = () => {
-    document.getElementById('auditLogContainer').innerHTML = rawData.slice(0, 10).map(g => `
-        <div class="audit-item">
-            <div class="audit-icon"><i class="fas fa-shield-halved"></i></div>
-            <div class="audit-info">
-                <h6>Registry Modification</h6>
-                <p><b>Registry Alert</b>: Grievance <b>${g.grievanceId}</b> moved to <b>${g.status}</b> state in Sector: ${g.category}.</p>
-                <small class="text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">TS: ${new Date(g.updatedAt).toLocaleTimeString()}</small>
+        // 1. Workload Doughnut
+        new Chart(document.getElementById('loadChart'), {
+            type: 'doughnut',
+            data: {
+                labels: deptLabels,
+                datasets: [{
+                    data: <%- JSON.stringify(chartData.counts) %>,
+                    backgroundColor: ['#0f172a', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+                    borderWidth: 0
+                }]
+            },
+            options: { ...circularOpts, cutout: '75%' }
+        });
+
+        // 2. Status Pie
+        new Chart(document.getElementById('statusChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Open', 'Under Review', 'Resolved', 'Closed'],
+                datasets: [{
+                    data: [
+                        rawGrievances.filter(g => g.status === 'OPEN').length,
+                        rawGrievances.filter(g => g.status === 'UNDER_REVIEW').length,
+                        rawGrievances.filter(g => g.status === 'RESOLVED').length,
+                        rawGrievances.filter(g => g.status === 'CLOSED').length
+                    ],
+                    backgroundColor: ['#ef4444', '#3b82f6', '#10b981', '#94a3b8'],
+                    borderWidth: 0
+                }]
+            },
+            options: circularOpts
+        });
+
+        // 3. Performance Bar
+        new Chart(document.getElementById('performanceChart'), {
+            type: 'bar',
+            data: {
+                labels: deptLabels,
+                datasets: [
+                    {
+                        label: 'Resolved',
+                        data: deptLabels.map(l => rawGrievances.filter(g => g.category === l && g.status === 'RESOLVED').length),
+                        backgroundColor: '#10b981',
+                        borderRadius: 5
+                    },
+                    {
+                        label: 'In Progress',
+                        data: deptLabels.map(l => rawGrievances.filter(g => g.category === l && g.status !== 'RESOLVED').length),
+                        backgroundColor: '#e2e8f0',
+                        borderRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { 
+                    x: { stacked: true, grid: { display: false } }, 
+                    y: { stacked: true, beginAtZero: true, grid: { color: '#f1f5f9' } } 
+                }
+            }
+        });
+    }
+
+    function populateAuditLogs() {
+        const container = document.getElementById('auditLogContainer');
+        if (!container) return;
+        container.innerHTML = rawGrievances.slice(0, 10).map(g => `
+            <div class="audit-item">
+                <div class="audit-icon"><i class="fas fa-history"></i></div>
+                <div class="audit-info">
+                    <h6>Workflow Update</h6>
+                    <p>Grievance <b>${g.grievanceId}</b> moved to <b>${g.status}</b> state (Category: ${g.category}).</p>
+                    <small class="text-muted">${new Date(g.updatedAt).toLocaleString()}</small>
+                </div>
             </div>
-        </div>
-    `).join('');
-};
-
-const getVelocityData = data => {
-    const labels = [], counts = [];
-    for (let i = 6; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        labels.push(d.toLocaleDateString('en-IN', {weekday: 'short'}));
-        counts.push(data.filter(g => new Date(g.createdAt).toDateString() === d.toDateString()).length);
+        `).join('');
     }
-    return {labels, counts};
-};
 
-const dataContexts = {
-    all: {
-        load: <%- JSON.stringify(chartData.counts) %>,
-        resolved: deptLabels.map(l => rawData.filter(g => g.category === l && g.status === 'RESOLVED').length),
-        pending: deptLabels.map(l => rawData.filter(g => g.category === l && ['OPEN', 'UNDER_REVIEW'].includes(g.status)).length),
-        status: ['OPEN', 'UNDER_REVIEW', 'RESOLVED', 'CLOSED'].map(s => rawData.filter(g => g.status === s).length),
-        velocity: getVelocityData(rawData)
-    },
-    escalated: {
-        load: deptLabels.map(l => rawData.filter(g => g.category === l && g.isEscalated).length),
-        resolved: deptLabels.map(() => 0),
-        pending: deptLabels.map(l => rawData.filter(g => g.category === l && g.isEscalated).length),
-        status: ['OPEN', 'UNDER_REVIEW'].map(s => rawData.filter(g => g.status === s && g.isEscalated).length).concat([0, 0]),
-        velocity: getVelocityData(rawData.filter(g => g.isEscalated))
+    function exportToExcel() {
+        const table = document.getElementById("registryTable");
+        let csv = [];
+        for (let i = 0; i < table.rows.length; i++) {
+            let row = [], cols = table.rows[i].querySelectorAll("td, th");
+            for (let j = 0; j < cols.length - 1; j++) row.push('"' + cols[j].innerText.trim() + '"');
+            csv.push(row.join(","));
+        }
+        const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `AAI_Registry_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
     }
-};
 
-let charts = {};
-const chartColors = ['#0f172a', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#f43f5e'];
-
-const initCharts = () => {
-    const circularOpts = {responsive: true, maintainAspectRatio: false, plugins: {legend: {position: 'bottom', labels: {boxWidth: 12, usePointStyle: true, font: {size: 11}, padding: 25}}}};
-    const trendOpts = {...circularOpts, scales: {x: {grid: {display: false}, ticks: {font: {weight: '700'}}}, y: {beginAtZero: true, grid: {color: '#f1f5f9'}, ticks: {font: {weight: '700'}}}}};
-    
-    charts.load = new Chart(document.getElementById('loadChart'), {type: 'doughnut', data: {labels: deptLabels, datasets: [{data: dataContexts.all.load, backgroundColor: chartColors, borderWidth: 0}]}, options: {...circularOpts, cutout: '80%'}});
-    charts.status = new Chart(document.getElementById('statusChart'), {type: 'pie', data: {labels: ['Open', 'Review', 'Resolved', 'Closed'], datasets: [{data: dataContexts.all.status, backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#94a3b8'], borderWidth: 0}]}, options: circularOpts});
-    charts.performance = new Chart(document.getElementById('performanceChart'), {type: 'bar', data: {labels: deptLabels, datasets: [{label: 'Resolved', data: dataContexts.all.resolved, backgroundColor: '#10b981', borderRadius: 6}, {label: 'Processing', data: dataContexts.all.pending, backgroundColor: '#e2e8f0', borderRadius: 6}]}, options: {...trendOpts, scales: {x: {...trendOpts.scales.x, stacked: true}, y: {...trendOpts.scales.y, stacked: true}}}});
-    charts.velocity = new Chart(document.getElementById('velocityChart'), {type: 'line', data: {labels: dataContexts.all.velocity.labels, datasets: [{label: 'Incoming', data: dataContexts.all.velocity.counts, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4, pointRadius: 6, pointBackgroundColor: '#fff', pointBorderWidth: 3}]}, options: trendOpts});
-};
-
-const setCommandContext = (type, btn) => {
-    const chartWrapper = document.getElementById('chartView'), toggle = document.getElementById('unifiedToggle');
-    chartWrapper.style.opacity = '0.3';
-    toggle.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    toggle.classList.toggle('active-alt', type === 'escalated');
-    
-    setTimeout(() => {
-        const ctx = dataContexts[type];
-        charts.load.data.datasets[0].data = ctx.load; charts.load.update();
-        charts.status.data.datasets[0].data = ctx.status; charts.status.update();
-        charts.performance.data.datasets[0].data = ctx.resolved; charts.performance.data.datasets[1].data = ctx.pending; charts.performance.update();
-        charts.velocity.data.datasets[0].data = ctx.velocity.counts; charts.velocity.update();
-        document.getElementById('archiveSection').classList.toggle('d-none', type === 'escalated');
-        document.getElementById('breachSection').classList.toggle('d-none', type !== 'escalated');
-        chartWrapper.style.opacity = '1';
-    }, 300);
-};
-
-const exportToExcel = () => {
-    const table = document.getElementById("registryTable"), csv = [];
-    for (let i = 0; i < table.rows.length; i++) {
-        const row = [], cols = table.rows[i].querySelectorAll("td, th");
-        for (let j = 0; j < cols.length - 1; j++) row.push(cols[j].innerText.replace(/,/g, ""));
-        csv.push(row.join(","));
-    }
-    const blob = new Blob([csv.join("\n")], {type: "text/csv"}), url = window.URL.createObjectURL(blob), a = document.createElement("a");
-    a.setAttribute("hidden", ""); a.setAttribute("href", url); a.setAttribute("download", "AAI_Registry_Report.csv");
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    initCharts(); populateAccounts(); populateAuditLogs();
-});
+    document.addEventListener('DOMContentLoaded', () => {
+        initCharts();
+        populateAuditLogs();
+    });
 </script>

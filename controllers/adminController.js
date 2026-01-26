@@ -2,6 +2,9 @@ const Department = require("../models/Department");
 const Grievance = require("../models/Grievance");
 const bcrypt = require("bcrypt");
 
+/**
+ * Creates a new department or admin account
+ */
 exports.createDepartment = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -28,13 +31,17 @@ exports.createDepartment = async (req, res) => {
   }
 };
 
-// ✅ NEW: Logic for Super Admin Analytics & Dashboard
+/**
+ * Fetches data for the Super Admin Dashboard
+ */
 exports.getSuperAdminDashboard = async (req, res) => {
   try {
-    // 1. Fetch ALL grievances for the global view
+    // Fetch all grievances for analytics
     const grievances = await Grievance.find().sort({ createdAt: -1 }).lean();
     
-    // 2. Calculate Statistics
+    // Fetch all department accounts for the Identity & Access Control section
+    const departments = await Department.find().sort({ createdAt: -1 }).lean();
+
     const stats = {
       total: grievances.length,
       resolved: grievances.filter(g => g.status === "RESOLVED").length,
@@ -42,16 +49,15 @@ exports.getSuperAdminDashboard = async (req, res) => {
       escalated: grievances.filter(g => g.isEscalated === true).length
     };
 
-    // 3. Prepare Data for Pie Chart (Count by Department Name)
     const categoryCounts = {};
     grievances.forEach(g => {
       categoryCounts[g.category] = (categoryCounts[g.category] || 0) + 1;
     });
 
-    // 4. Render the special Super Dashboard
     res.render("admin/super-dashboard", {
       stats,
       grievances,
+      departments,
       chartData: {
         labels: Object.keys(categoryCounts),
         counts: Object.values(categoryCounts)
@@ -59,7 +65,33 @@ exports.getSuperAdminDashboard = async (req, res) => {
       department: { name: "Super Admin" }
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Error loading Super Admin dashboard");
+    console.error("Super Admin Dashboard Error:", err);
+    res.status(500).send("Error loading dashboard data");
+  }
+};
+
+/**
+ * ✅ NEW: Deletes a department/admin account
+ */
+exports.deleteAccount = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Security check: Prevent the logged-in Super Admin from deleting themselves
+    if (req.session.adminId && req.session.adminId.toString() === id) {
+      return res.status(400).send("Security Alert: You cannot delete your own administrative account.");
+    }
+
+    const deleted = await Department.findByIdAndDelete(id);
+    
+    if (!deleted) {
+      return res.status(404).send("Account not found.");
+    }
+
+    // Redirect back to the dashboard to see the updated list
+    res.redirect("/admin/dashboard");
+  } catch (err) {
+    console.error("Delete Account Error:", err);
+    res.status(500).send("Failed to delete the administrative account.");
   }
 };
