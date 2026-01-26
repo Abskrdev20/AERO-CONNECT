@@ -23,7 +23,7 @@ const grievanceSchema = new mongoose.Schema(
       required: true
     },
     category: {
-      type: String, // This maps to Department Name
+      type: String,
       required: true
     },
     subject: {
@@ -40,7 +40,7 @@ const grievanceSchema = new mongoose.Schema(
     priority: {
       type: String,
       required: true,
-      enum: ["LOW", "MEDIUM", "HIGH"]
+      enum: ["request","low","medium","high"]
     },
     attachments: [attachmentSchema],
     status: {

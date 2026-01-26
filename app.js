@@ -190,6 +190,28 @@ app.get("/admin/create-department", (req, res) => {
   res.render("admin/create-department", { adminMessage: message });
 });
 
+/* ================= USER GRIEVANCE PAGE ================= */
+app.get("/grievances", async (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+
+  const user = await User.findById(req.session.userId).lean();
+  if (!user) return res.redirect("/login");
+
+  const currentUser = {
+    name: user.fullName,
+    empId: user.employeeId,
+    email: user.email,
+    department: user.department,
+    designation: user.position.replace(/_/g, " ")
+  };
+
+  res.render("grievances", {
+    currentUser,
+    page: "grievances"
+  });
+});
+
+/* ================= PROFILE ================= */
 app.get("/profile", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
   const user = await User.findById(req.session.userId).lean();
