@@ -1,0 +1,81 @@
+<% layout("layouts/boilerplate") %>
+
+<!-- ================= RESET PASSWORD PAGE ================= -->
+<div id="reset-password-page" class="page-container active">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-circle">
+          <i class="fas fa-unlock-alt"></i>
+        </div>
+        <h2>Reset Password</h2>
+        <p>Airports Authority of India</p>
+        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 5px;">
+          Grievance Redressal Portal
+        </p>
+      </div>
+
+      <!-- 🔑 IMPORTANT: card-content wrapper -->
+      <div class="card-content">
+        <form action="/auth/reset-password/<%= token %>" method="POST">
+
+          <div class="mb-3">
+            <label class="form-label">
+              New Password <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group has-toggle">
+              <span class="input-group-text">
+                <i class="fas fa-lock"></i>
+              </span>
+              <input
+                type="password"
+                class="form-control"
+                id="newPassword"
+                name="password"
+                placeholder="Enter new password"
+                required
+              >
+              <button
+                type="button"
+                class="password-toggle"
+                onclick="togglePassword('newPassword', this)"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">
+              Confirm Password <span class="required-asterisk">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-check-circle"></i>
+              </span>
+              <input
+                type="password"
+                class="form-control"
+                name="confirmPassword"
+                placeholder="Confirm new password"
+                required
+              >
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-auth">
+            Reset Password
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <p>
+            Remembered your password?
+            <a href="/login">Login</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

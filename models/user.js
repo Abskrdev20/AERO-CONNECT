@@ -25,6 +25,11 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       match: [/^[\w-\.]+@aai\.aero$/, "Only AAI official email allowed"]
     },
+    recoveryEmail: {
+      type: String,
+      lowercase: true,
+      trim: true
+    },
 
     mobile: {
       type: String,
@@ -57,6 +62,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    
+    resetPasswordToken: {
+      type: String
+    },
+    resetPasswordExpires: {
+      type: Date
+    },
+
 
     role: {
       type: String,

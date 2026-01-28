@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const ejsMate = require("ejs-mate");
@@ -12,9 +13,13 @@ dotenv.config();
 
 /* ================= DATABASE CONNECTION ================= */
 const connectDB = require("./config/db");
-connectDB();
+connectDB(); // <-- connect MongoDB
+
+//dotenv.config(); // <-- load env variables
+const authRoutes = require("./routes/auth");
 
 /* ================= APP INITIALIZATION ================= */
+
 const app = express();
 
 /* ================= VIEW ENGINE SETUP ================= */
@@ -26,6 +31,12 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use((req, res, next) => {
+  console.log("➡️ INCOMING:", req.method, req.url);
+  next();
+});
+
 
 app.use(
   session({
@@ -273,6 +284,29 @@ app.post("/track/status", async (req, res) => {
   }
 });
 
-/* ================= SERVER START ================= */
+app.post("/track/status", (req, res) => {
+  // your existing logic – unchanged
+});
+
+const transporter = require("./config/mailer");
+
+app.get("/test-mail", async (req, res) => {
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER,
+      subject: "Test Mail",
+      text: "Agar ye mail aayi, toh nodemailer ka setup successful 🎉",
+    });
+
+    res.send("Mail sent successfully");
+  } catch (err) {
+    console.error(err);
+    res.send("Mail failed");
+  }
+});
+
+/* ================= SERVER ================= */
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));

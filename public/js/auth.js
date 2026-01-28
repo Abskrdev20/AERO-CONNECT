@@ -117,17 +117,20 @@ function handleRegister(event) {
 
   fetch("/auth/register", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      fullName: document.querySelector('input[placeholder="Full Name"]').value,
-      employeeId: document.querySelector('input[placeholder="EMP ID"]').value,
-      email: document.querySelector('input[type="email"]').value,
-      mobile: document.querySelector('input[type="tel"]').value,
-      position: document.querySelectorAll("select")[0].value,
-      department: document.querySelectorAll("select")[1].value,
-      password,
-      captcha: captchaInput
-    })
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    fullName: document.querySelector('input[placeholder="Full Name"]').value,
+    employeeId: document.querySelector('input[placeholder="EMP ID"]').value,
+    email: document.querySelector('input[type="email"]').value,
+    recoveryEmail: document.querySelector('input[name="recoveryEmail"]').value,
+    mobile: document.querySelector('input[type="tel"]').value,
+    position: document.querySelectorAll("select")[0].value,
+    department: document.querySelectorAll("select")[1].value,
+    password,
+    captcha: captchaInput
+  })
   })
     .then(res => res.json())
     .then(data => {

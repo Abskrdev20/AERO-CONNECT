@@ -25,7 +25,7 @@
           Enter your credentials to receive a password reset link on your official email.
         </div>
 
-        <form onsubmit="handleForgotPassword(event)">
+        <form id="forgotForm">
           <div class="mb-3">
             <label class="form-label">
               Registered Email <span class="required-asterisk">*</span>
@@ -109,3 +109,54 @@
     </div>
   </div>
 </div>
+
+
+<script>
+  console.log("🟢 forgot-password JS loaded");
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("forgotForm");
+    const submitBtn = form.querySelector("button[type='submit']");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      console.log("🟡 submit clicked");
+
+      const email = document.querySelector('input[type="email"]').value;
+      const employeeId = document.querySelector('input[placeholder="Your EMP ID"]').value;
+
+      // Disable button to prevent double submit
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Sending...";
+
+      try {
+        const res = await fetch("/auth/forgot-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, employeeId })
+        });
+
+        const text = await res.text();
+        console.log("🟢 response:", text);
+
+        if (res.ok) {
+          alert("✅"+ text);
+          // Optional: clear inputs
+          form.reset();
+          generateForgotCaptcha(); // refresh captcha
+        } else {
+          alert("⚠️ " + text);
+        }
+
+      } catch (err) {
+        console.error(err);
+        alert("⚠️ Something went wrong. Try again.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Send Reset Link";
+      }
+    });
+  });
+</script>
