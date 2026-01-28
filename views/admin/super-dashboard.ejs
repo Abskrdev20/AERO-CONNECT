@@ -48,10 +48,6 @@
         gap: 8px;
         transition: all 0.3s ease;
         border: 1px solid var(--sa-border);
-<<<<<<< HEAD
-=======
-        /* Prominent borders for visibility */
->>>>>>> c25defc2d4b26afaf2770056095493aa9b687883
         border-left: 6px solid transparent; 
         border-top: 5px solid transparent; 
         position: relative;
@@ -180,10 +176,6 @@
     </aside>
 
     <main class="sa-main">
-<<<<<<< HEAD
-=======
-        <!-- ANALYTICS DASHBOARD -->
->>>>>>> c25defc2d4b26afaf2770056095493aa9b687883
         <div id="intelligence" class="dashboard-section active">
             <header class="sa-header">
                 <div class="sa-header-left">
@@ -208,10 +200,6 @@
                 </div>
             </div>
 
-<<<<<<< HEAD
-=======
-            <!-- ANALYTICS TOGGLE -->
->>>>>>> c25defc2d4b26afaf2770056095493aa9b687883
             <div class="sa-analytics-control">
                 <h5 class="m-0 fw-bold"><i class="fas fa-chart-simple me-2 text-primary"></i>Dashboard Insights</h5>
                 <div class="d-flex align-items-center gap-3">
@@ -436,7 +424,7 @@
             row.style.display = (isEscalatedOnly && !isEsc) ? 'none' : '';
         });
 
-        const filtered = isEscalatedOnly ? rawGrievances.filter(g => g.isEscagit add .lated) : rawGrievances;
+        const filtered = isEscalatedOnly ? rawGrievances.filter(g => g.isEscalated) : rawGrievances;
         
         document.getElementById('statTotal').innerText = filtered.length;
         document.getElementById('statResolved').innerText = filtered.filter(g => g.status === 'RESOLVED').length;
