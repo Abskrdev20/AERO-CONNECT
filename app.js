@@ -47,7 +47,6 @@ app.use(
 );
 
 /* ================= ROUTE HANDLERS (CONTROLLERS) ================= */
-const authRoutes = require("./routes/auth");
 const grievanceRoutes = require("./routes/grievance");
 const adminAuthRoutes = require("./routes/adminAuth");
 const adminRoutes = require("./routes/admin");
