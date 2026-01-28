@@ -78,25 +78,26 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Department <span class="required-asterisk">*</span></label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="fas fa-building"></i></span>
-              <select name="department" class="form-select" required>
-                <option value="">-- Select Category --</option>
-                <option value="operations">OPS (Operations)</option>
-                <option value="it">IT (Information Technology)</option>
-                <option value="atm">ATM (Air Traffic Management)</option>
-                <option value="hr">HR (Human Resources)</option>
-                <option value="finance">Finance</option>
-                <option value="engg_civil">Engg. Civil</option>
-                <option value="engg_electrical">Engg. Electrical</option>
-                <option value="security">Security</option>
-                <option value="commercial">Commercial</option>
-                <option value="hindi">Hindi</option>
-                <option value="law">Law</option>
-              </select>
-            </div>
-          </div>
+  <label class="form-label">Department <span class="required-asterisk">*</span></label>
+  <div class="input-group">
+    <span class="input-group-text"><i class="fas fa-building"></i></span>
+    <select name="department" class="form-select" required>
+      <option value="">-- Select Category --</option>
+      <option value="Operations">OPS (Operations)</option>
+      <option value="IT">IT (Information Technology)</option>
+      <option value="ATM">ATM (Air Traffic Management)</option>
+      <option value="HR">HR (Human Resources)</option>
+      <option value="Finance">Finance</option>
+      <option value="Engg. Civil">Engg. Civil</option>
+      <option value="Engg. Electrical">Engg. Electrical</option>
+      <option value="Security">Security</option>
+      <option value="Commercial">Commercial</option>
+      <option value="Hindi">Hindi</option>
+      <option value="Law">Law</option>
+    </select>
+  </div>
+</div>
+
 
           <div class="mb-3">
             <label class="form-label">Password <span class="required-asterisk">*</span></label>
@@ -121,34 +122,67 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Security Verification <span class="required-asterisk">*</span></label>
+            <label class="form-label">
+              Security Verification <span class="required-asterisk">*</span>
+            </label>
             <div class="captcha-wrapper">
               <div class="captcha-visual">
-              <div class="captcha-display" id="regCaptchaCode"></div>
-              <button type="button" class="refresh-btn" onclick="generateRegCaptcha()">
-              <i class="fas fa-sync-alt"></i>
-              </button>
+                <img
+                    src="/auth/captcha"
+                    alt="captcha"
+                    class="captcha-display"
+                    onclick="this.src='/auth/captcha?'+Date.now()"
+                  />
 
+                <!-- <button
+                  type="button"
+                  class="refresh-btn"
+                  onclick="generateRegCaptcha()"
+                >
+                  <i class="fas fa-sync-alt"></i>
+                </button> -->
               </div>
               <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-shield-alt"></i></span>
-                <input type="text" name="captchaInput" class="form-control" id="regCaptchaInput" placeholder="Enter code" required>
+                <span class="input-group-text">
+                  <i class="fas fa-shield-alt"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="regCaptchaInput"
+                  placeholder="Enter code"
+                  required
+                >
               </div>
             </div>
           </div>
 
           <div class="mb-4 form-check d-flex align-items-center">
-            <input type="checkbox" class="form-check-input" id="terms" required>
-            <label class="form-check-label ms-2" for="terms" style="font-size: 0.9rem; font-weight: 500;">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="terms"
+              required
+            >
+            <label
+              class="form-check-label ms-2"
+              for="terms"
+              style="font-size: 0.9rem; font-weight: 500;"
+            >
               I agree to the <a href="#">Terms & Conditions</a>
             </label>
           </div>
 
-          <button type="submit" class="btn btn-auth">Submit Registration</button>
+          <button type="submit" class="btn btn-auth">
+            Submit Registration
+          </button>
         </form>
 
         <div class="auth-footer">
-          <p>Already have an account? <a href="/login">Login Here</a></p>
+          <p>
+            Already have an account?
+            <a href="/login">Login Here</a>
+          </p>
         </div>
       </div>
     </div>
