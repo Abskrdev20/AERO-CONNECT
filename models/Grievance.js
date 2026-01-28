@@ -48,10 +48,10 @@ const grievanceSchema = new mongoose.Schema(
       enum: ["OPEN", "UNDER_REVIEW", "RESOLVED", "CLOSED"],
       default: "OPEN"
     },
-    isEscalated: {
-      type: Boolean,
-      default: false
-    },
+    isEscalated: { type: Boolean, default: false },
+    escalationReason: { type: String, default: null },
+    escalatedBy: { type: String, default: null }, // Will store "SYSTEM"
+    escalationDate: { type: Date, default: null },
     departmentComment: String,
     reviewedAt: Date,
     resolvedAt: Date

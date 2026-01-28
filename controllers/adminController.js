@@ -36,10 +36,37 @@ exports.createDepartment = async (req, res) => {
  */
 exports.getSuperAdminDashboard = async (req, res) => {
   try {
-    // Fetch all grievances for analytics
+    // ====================================================
+    // ✅ AUTO-ESCALATION LOGIC (Start)
+    // ====================================================
+    const SLA_DAYS = 20; 
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() - SLA_DAYS);
+
+    // Find and update all tickets older than 20 days
+    await Grievance.updateMany(
+      {
+        createdAt: { $lt: thresholdDate },          // Created before 20 days ago
+        status: { $in: ['OPEN', 'UNDER_REVIEW'] },  // Still pending
+        isEscalated: false                          // Not yet escalated
+      },
+      {
+        $set: {
+          isEscalated: true,
+          escalationReason: `Automatic Escalation: Unresolved for ${SLA_DAYS}+ days`,
+          escalatedBy: 'SYSTEM',
+          escalationDate: new Date()
+        }
+      }
+    );
+    // ====================================================
+    // ✅ AUTO-ESCALATION LOGIC (End)
+    // ====================================================
+
+    // ✅ FIXED: You must fetch grievances before using them!
     const grievances = await Grievance.find().sort({ createdAt: -1 }).lean();
-    
-    // Fetch all department accounts for the Identity & Access Control section
+
+    // Fetch all department accounts
     const departments = await Department.find().sort({ createdAt: -1 }).lean();
 
     const stats = {
@@ -93,5 +120,31 @@ exports.deleteAccount = async (req, res) => {
   } catch (err) {
     console.error("Delete Account Error:", err);
     res.status(500).send("Failed to delete the administrative account.");
+  }
+};
+
+/**
+ * ✅ SUPER ADMIN: Resolve Escalated Grievance
+ */
+exports.resolveEscalatedGrievance = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { comment } = req.body;
+
+    if (req.session.role !== 'SUPERADMIN') {
+      return res.status(403).send("Unauthorized");
+    }
+
+    await Grievance.findByIdAndUpdate(id, {
+      status: 'RESOLVED',
+      resolvedAt: new Date(),
+      departmentComment: `[SUPER ADMIN INTERVENTION]: ${comment}`,
+      isEscalated: false
+    });
+
+    res.redirect('/admin/dashboard');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
   }
 };
