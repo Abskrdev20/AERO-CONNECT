@@ -33,7 +33,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  console.log("➡️ INCOMING:", req.method, req.url);
+  console.log(" INCOMING:", req.method, req.url);
   next();
 });
 
@@ -46,6 +46,18 @@ app.use(
   })
 );
 
+// ================= GLOBAL DEFAULT STATS (IMPORTANT) =================
+app.use((req, res, next) => {
+  res.locals.stats = {
+    totalGrievances: 0,
+    resolved: 0,
+    inProgress: 0,
+    avgResolution: 0
+  };
+  next();
+});
+
+
 /* ================= ROUTE HANDLERS (CONTROLLERS) ================= */
 const grievanceRoutes = require("./routes/grievance");
 const adminAuthRoutes = require("./routes/adminAuth");
@@ -54,11 +66,16 @@ const adminController = require("./controllers/adminController");
 
 app.use("/auth", authRoutes);
 app.use("/grievances", grievanceRoutes);
+// ================= HOMEPAGE (STATS) =================
+const grievanceController = require("./controllers/grievanceController");
+
+app.get("/", grievanceController.getHomeStats);
+
 app.use("/admin-auth", adminAuthRoutes);
 app.use("/admin", adminRoutes);
 
 /* ================= LANDING & AUTH VIEWS ================= */
-app.get("/", (req, res) => res.render("home"));
+
 app.get("/login", (req, res) => res.render("auth/login"));
 app.get("/login/admin", (req, res) => res.render("auth/admin-login"));
 app.get("/register", (req, res) => res.render("auth/register"));
@@ -121,7 +138,7 @@ app.get("/admin/dashboard", async (req, res) => {
       return adminController.getSuperAdminDashboard(req, res);
     }
 
-    // 🏢 DEPARTMENT ADMIN VIEW
+    //  DEPARTMENT ADMIN VIEW
     const grievances = await Grievance.find({ category: admin.name })
       .sort({ createdAt: -1 })
       .lean();
@@ -305,7 +322,9 @@ app.get("/test-mail", async (req, res) => {
   }
 });
 
+
+
 /* ================= SERVER ================= */
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(` Server running at http://localhost:${PORT}`));

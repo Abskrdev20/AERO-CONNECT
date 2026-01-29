@@ -17,6 +17,8 @@ router.post("/upload", upload.array("attachments", 5), (req, res) => {
 // save grievance (NO grievance number yet)
 router.post("/submit", grievanceController.createGrievance);
 
+
+
 const Grievance = require("../models/Grievance");
 
 router.get("/:grievanceId", async (req, res) => {
