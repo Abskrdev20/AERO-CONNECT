@@ -451,4 +451,37 @@
         initCharts();
         renderTable(); // Init pagination
     });
+    // ✅ Export to CSV Function (Bina code break kiye)
+    function exportToExcel() {
+        const table = document.getElementById("registryTable"); // Registry Table ko target karta hai [cite: 495]
+        if (!table) return alert("Table not found!");
+
+        let csv = [];
+        const rows = table.querySelectorAll("tr");
+        
+        for (let i = 0; i < rows.length; i++) {
+            // Sirf wahi rows export hongi jo screen pe dikh rahi hain (Search filter ke hisaab se) [cite: 542]
+            if (rows[i].style.display !== "none") {
+                const row = [], cols = rows[i].querySelectorAll("td, th");
+                
+                // j < cols.length - 1 ka matlab hai ki "View" button wala column skip ho jayega [cite: 498]
+                for (let j = 0; j < cols.length - 1; j++) {
+                    // Data ko clean karta hai taaki CSV format na bigde
+                    let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/,/g, ";");
+                    row.push(data);
+                }
+                csv.push(row.join(","));
+            }
+        }
+
+        // CSV file create karke download trigger karta hai
+        const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `AAI_Grievance_Report_${new Date().toLocaleDateString('en-IN')}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 </script>
