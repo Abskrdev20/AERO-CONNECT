@@ -19,7 +19,7 @@
       <p><strong>Grievance ID:</strong> <%= grievance.grievanceId %></p>
       <p><strong>Status:</strong> <%= grievance.status.replace("_", " ") %></p>
       <p><strong>Category:</strong> <%= grievance.category %></p>
-      <p><strong>Priority:</strong> <%= grievance.priority %></p>
+      <p><strong>Priority:</strong> <%= grievance.priority.toUpperCase() %></p>
       <p><strong>Submitted On:</strong>
         <%= new Date(grievance.createdAt).toLocaleString("en-IN") %>
       </p>
@@ -52,7 +52,6 @@
               : "N/A" %>
       </p>
 
-
       <hr>
 
       <!-- ================= GRIEVANCE CONTENT ================= -->
@@ -68,7 +67,7 @@
 
       <!-- ================= INCIDENT DETAILS ================= -->
       <h5>Incident Details</h5>
-      <p><strong>Date:</strong> <%= grievance.incidentDate || "N/A" %></p>
+      <p><strong>Date:</strong> <%= grievance.incidentDate ? new Date(grievance.incidentDate).toLocaleDateString("en-IN") : "N/A" %></p>
       <p><strong>Time:</strong> <%= grievance.incidentTime || "N/A" %></p>
       <p><strong>Location:</strong> <%= grievance.location || "N/A" %></p>
 
@@ -76,41 +75,80 @@
 
       <!-- ================= ATTACHMENTS ================= -->
       <h5>Attachments</h5>
-      <% if (grievance.attachments.length === 0) { %>
+      <% if (!grievance.attachments || grievance.attachments.length === 0) { %>
         <p class="text-muted">No attachments uploaded.</p>
+      <% } else { %>
+        <div class="d-flex flex-wrap gap-3">
+          <% grievance.attachments.forEach(file => { %>
+            <% if (file.resource_type === "image") { %>
+              <a href="<%= file.url %>" target="_blank">
+                <img
+                  src="<%= file.url %>"
+                  style="width:150px;height:150px;object-fit:cover;border-radius:6px;border:1px solid #ddd;">
+              </a>
+            <% } else { %>
+              <a
+                href="<%= file.url %>"
+                target="_blank"
+                class="btn btn-outline-primary btn-sm">
+                📄 View Document
+              </a>
+            <% } %>
+          <% }) %>
+        </div>
       <% } %>
 
-      <div class="d-flex flex-wrap gap-3">
-        <% grievance.attachments.forEach(file => { %>
-          <% if (file.resource_type === "image") { %>
-            <a href="<%= file.url %>" target="_blank">
-              <img
-                src="<%= file.url %>"
-                style="width:150px;height:150px;object-fit:cover;border-radius:6px;">
-            </a>
-          <% } else { %>
-            <a
-              href="<%= file.url %>"
-              target="_blank"
-              class="btn btn-outline-primary btn-sm">
-              📄 View Document
-            </a>
-          <% } %>
-        <% }) %>
-      </div>
+      <!-- ================= INTERNAL TRANSFER NOTE ================= -->
+      <% if (grievance.forwardingRemark) { %>
+        <hr>
+        <h5>Internal Transfer Note</h5>
+        <div class="alert alert-warning">
+          <i class="fas fa-info-circle me-2"></i>
+          <%= grievance.forwardingRemark %>
+        </div>
+      <% } %>
 
       <!-- ================= DEPARTMENT RESPONSE ================= -->
       <% if (grievance.departmentComment) { %>
         <hr>
-        <h5>Department Response</h5>
-        <div class="alert alert-info">
+        <h5>Official Department Response</h5>
+        <div class="alert alert-success">
           <%= grievance.departmentComment %>
         </div>
       <% } %>
 
-      <!-- ================= ADMIN ACTION ================= -->
-      <% if (isAdmin) { %>
+      <% if (isAdmin && (grievance.status === 'OPEN' || grievance.status === 'UNDER_REVIEW')) { %>
         <hr>
+        <!-- ============= FORWARD SECTION ============= -->
+        <div class="mt-4 p-3 border rounded" style="background-color: #fffaf0; border-color: #ffeeba !important;">
+          <h5 class="text-warning"><i class="fas fa-share-square"></i> Forward to Another Department</h5>
+          <p class="small text-muted">If this grievance does not pertain to your department, please forward it to the concerned department.</p>
+          
+          <form action="/admin/grievances/<%= grievance.grievanceId %>/forward" method="POST">
+            <div class="mb-3">
+              <label class="form-label fw-bold small">Choose Correct Department:</label>
+              <select name="newCategory" class="form-select" required>
+                <option value="" disabled selected>Select Department...</option>
+                <option value="Operations">Operations</option>
+                <option value="IT">IT</option>
+                <option value="ATM">ATM</option>
+                <option value="HR">HR</option>
+                <option value="Finance">Finance</option>
+                <option value="Security">Security</option>
+                <option value="Engg. Civil">Engg. Civil</option>
+                <option value="Engg. Electrical">Engg. Electrical</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold small">Reason for Redirection (Remark):</label>
+              <textarea name="remark" class="form-control" rows="2" placeholder="Write why you are redirecting this..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-warning w-100 fw-bold">Forward to Department</button>
+          </form>
+        </div>
+
+        <hr>
+        <!-- ============= ACTION SECTION ============= -->
         <h5>Department Action</h5>
 
         <form
@@ -118,11 +156,12 @@
           action="/admin/grievances/<%= grievance.grievanceId %>/action">
 
           <div class="mb-3">
-            <label class="form-label">Department Response</label>
+            <label class="form-label">Update Official Remark</label>
             <textarea
               name="remark"
               class="form-control"
               rows="4"
+              placeholder="Enter resolution or update note..."
               required
             ><%= grievance.departmentComment || "" %></textarea>
           </div>
@@ -130,7 +169,7 @@
           <button class="btn btn-primary">
             <% if (grievance.status === "OPEN") { %>
               Mark as Under Review
-            <% } else if (grievance.status === "UNDER_REVIEW") { %>
+            <% } else { %>
               Resolve Grievance
             <% } %>
           </button>

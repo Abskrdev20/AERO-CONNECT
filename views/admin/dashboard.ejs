@@ -1,9 +1,11 @@
 <% layout('layouts/boilerplate') -%>
 
+<!-- Features ke liye Chart.js load kiya gaya hai -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="/css/dashboard.css">
 
 <style>
+  /* Existing UI ko bina disturb kiye naye features ke liye minimal styling */
   .charts-row {
     display: grid;
     grid-template-columns: 1fr 1.5fr;
@@ -63,10 +65,6 @@
         <i class="fas fa-th-large"></i> Overview
       </a>
 
-      <!-- <a href="/admin/create-department" class="nav-item">
-        <i class="fas fa-building"></i> Create Department
-      </a> -->
-
       <div class="nav-divider"></div>
 
       <a href="/logout" class="nav-item logout">
@@ -124,7 +122,7 @@
         </div>
       </div>
       <div class="chart-card">
-        <h4 class="section-title" style="margin-top: 0;">Daily Intake Trend (7 Days)</h4>
+        <h4 class="section-title" style="margin-top: 0;">Submission Trend (Last 30 Days)</h4>
         <div class="chart-container">
           <canvas id="intakeLineChart"></canvas>
         </div>
@@ -192,17 +190,17 @@
   const grievances = <%- JSON.stringify(grievances) %>;
 
   function initCharts() {
-    // 1. Success Matrix (Pie Chart)
+    // 1. Success Matrix (Pie Chart) - Updated Colors to match professional theme
     const solved = grievances.filter(g => g.status === 'RESOLVED' || g.status === 'CLOSED').length;
     const pending = grievances.length - solved;
 
     new Chart(document.getElementById('statusPieChart'), {
       type: 'pie',
       data: {
-        labels: ['Solved', 'Pending/Open'],
+        labels: ['Solved', 'Pending'],
         datasets: [{
           data: [solved, pending],
-          backgroundColor: ['#27ae60', '#f59e0b'],
+          backgroundColor: ['#10b981', '#f59e0b'], // Updated to Emerald Green and Amber Orange
           borderColor: '#ffffff',
           borderWidth: 2
         }]
@@ -211,25 +209,24 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'bottom', labels: { font: { weight: '600' } } }
+          legend: { position: 'bottom', labels: { usePointStyle: true, font: { weight: '600', size: 12 } } }
         }
       }
     });
 
-    // 2. Daily Trend (Line Chart - Last 7 Days)
+    // 2. Daily Trend (Line Chart - Updated to 30 Days)
     const labels = [];
-    for (let i = 6; i >= 0; i--) {
+    const counts = [];
+    
+    for (let i = 29; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      labels.push(d.toLocaleDateString('en-IN', { weekday: 'short' }));
-    }
-
-    const counts = labels.map((_, idx) => {
-      const d = new Date();
-      d.setDate(d.getDate() - (6 - idx));
+      // Format updated to DD/MMM to match Super Admin layout
+      labels.push(d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }));
+      
       const dateStr = d.toDateString();
-      return grievances.filter(g => new Date(g.createdAt).toDateString() === dateStr).length;
-    });
+      counts.push(grievances.filter(g => new Date(g.createdAt).toDateString() === dateStr).length);
+    }
 
     new Chart(document.getElementById('intakeLineChart'), {
       type: 'line',
@@ -242,7 +239,7 @@
           backgroundColor: 'rgba(0, 61, 130, 0.05)',
           fill: true,
           tension: 0.4,
-          pointRadius: 5,
+          pointRadius: 3,
           pointBackgroundColor: '#003d82'
         }]
       },
@@ -251,8 +248,15 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { display: false } },
-          y: { beginAtZero: true, grid: { color: '#f1f3f5' }, ticks: { stepSize: 1 } }
+          x: { 
+            grid: { display: false },
+            ticks: { maxTicksLimit: 10 } // Prevents overcrowding on x-axis
+          },
+          y: { 
+            beginAtZero: true, 
+            grid: { color: '#f1f3f5' }, 
+            ticks: { stepSize: 1 } 
+          }
         }
       }
     });
@@ -278,6 +282,7 @@
     downloadLink.style.display = "none";
     document.body.appendChild(downloadLink);
     downloadLink.click();
+    document.body.removeChild(downloadLink);
   }
 
   document.addEventListener('DOMContentLoaded', initCharts);
