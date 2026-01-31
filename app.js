@@ -1,15 +1,13 @@
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 const express = require("express");
 const path = require("path");
 const ejsMate = require("ejs-mate");
-const dotenv = require("dotenv");
 const session = require("express-session");
 
 const User = require("./models/User");
 const Grievance = require("./models/Grievance");
 const Department = require("./models/Department");
 
-dotenv.config();
 
 /* ================= DATABASE CONNECTION ================= */
 const connectDB = require("./config/db");
@@ -32,10 +30,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use((req, res, next) => {
-  console.log(" INCOMING:", req.method, req.url);
-  next();
-});
 
 
 app.use(
@@ -327,4 +321,4 @@ app.get("/test-mail", async (req, res) => {
 /* ================= SERVER ================= */
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(` Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));

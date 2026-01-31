@@ -1,11 +1,9 @@
 <% layout('layouts/boilerplate') -%>
 
-<!-- Features ke liye Chart.js load kiya gaya hai -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="/css/dashboard.css">
 
 <style>
-  /* Existing UI ko bina disturb kiye naye features ke liye minimal styling */
   .charts-row {
     display: grid;
     grid-template-columns: 1fr 1.5fr;
@@ -204,7 +202,7 @@
         labels: ['Solved', 'Pending/Open'],
         datasets: [{
           data: [solved, pending],
-          backgroundColor: ['#27ae60', '#f3f6f9'],
+          backgroundColor: ['#27ae60', '#f59e0b'],
           borderColor: '#ffffff',
           borderWidth: 2
         }]

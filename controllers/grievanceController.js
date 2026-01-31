@@ -52,8 +52,6 @@ exports.createGrievance = async (req, res) => {
   }
 };
 
-console.log("getHomeStats CALLED");
-
 exports.getHomeStats = async (req, res) => {
   try {
     const totalGrievances = await Grievance.countDocuments();

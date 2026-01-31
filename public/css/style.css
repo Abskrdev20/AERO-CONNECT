@@ -197,16 +197,16 @@ body {
 
 /* ===================== STATS ===================== */
 .stats-section {
-  padding: 40px 0;
+  padding: 5px 0;
 }
 
 .stat-card {
   text-align: center;
-  padding: 30px 20px;
+  padding: 20px 20px;
 }
 
 .stat-number {
-  font-size: 3rem;
+  font-size: 4rem;
   font-weight: 700;
   color: var(--primary);
 }
@@ -218,10 +218,9 @@ body {
 }
 
 
-/* ===================== ABOUT ===================== */
 /* ===================== ABOUT SECTION ===================== */
 .about-system-section {
-  padding: 70px 0;
+  padding: 85px 0;
 }
 
 .about-system-section .container {
@@ -343,7 +342,7 @@ body {
 
 
 /* ===================== FEATURES ===================== */
-.features-section { padding: 70px 6%; background: #f8fafc; }
+.features-section { padding: 80px 6%; background: #f8fafc; }
 
 .features-header { text-align: center; margin-bottom: 40px; }
 .features-header h1 { font-size: 2.4rem; color: var(--text-dark); }

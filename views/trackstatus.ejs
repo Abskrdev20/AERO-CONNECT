@@ -19,7 +19,7 @@
       </div>
 
       <div class="status-right">
-        <span class="priority-badge <%= priority.toLowerCase() %>">
+        <span class="priority-label <%= priority.toLowerCase() %>">
           <%= priority %> PRIORITY
         </span>
         <span class="status-badge <%= statusClass %>">
@@ -45,7 +45,7 @@
         <p>Resolved</p>
       </div>
 
-      <div class="step <%= step >= 4 ? 'active' : '' %>">
+      <div class="step <%= step >= 3 ? 'active' : '' %>">
         <span></span>
         <p>Closed</p>
       </div>
