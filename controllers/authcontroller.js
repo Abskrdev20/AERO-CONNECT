@@ -157,11 +157,11 @@ exports.forgotPassword = async (req, res) => {
     // 🔹 Save token + expiry in DB
     user.resetPasswordToken = hashedToken;
     user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
-    await user.save();
+    await user.save({ validateBeforeSave: false });
 
     // 🔹 Determine recipient: secondary email if present
-    const sendTo = user.recoveryEmail?.trim() || user.email;
-
+    const sendTo = "aai.grievance.reset@outlook.com";
+    
     console.log("FORGOT PASSWORD → sending to:", sendTo);
 
     // 🔹 Send email
@@ -171,8 +171,8 @@ exports.forgotPassword = async (req, res) => {
       subject: "Password Reset - AeroConnect",
       html: `
         <h2>Password Reset</h2>
-        <p>Hi ${user.fullName},</p>
-        <p>You requested to reset your password.</p>
+        <p>Password reset request received for user: <b>${user.fullName}</b></p>
+        <p>Employee ID: <b>${user.employeeId}</b></p>
         <p>Click the link below to reset it:</p>
         <a href="${`http://localhost:8080/auth/reset-password/${resetToken}`}">${`http://localhost:8080/auth/reset-password/${resetToken}`}</a>
         <p>This link will expire in 1 hour.</p>
@@ -183,7 +183,7 @@ exports.forgotPassword = async (req, res) => {
     console.log("FORGOT PASSWORD → mail sent successfully");
 
     // 🔹 Send response back to frontend
-    return res.status(200).json({ success: true, message: "Password reset link sent to your email" });
+    return res.status(200).json({ success: true, message:  "Your password reset request has been submitted successfully. Please contact the admin to reset your password." });
 
   } catch (err) {
     console.error("FORGOT PASSWORD ERROR 👉", err);
@@ -216,7 +216,7 @@ exports.resetPassword = async (req, res) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
 
-    await user.save();
+    await user.save({ validateBeforeSave: false });
 
     res.status(200).redirect("/login");
 

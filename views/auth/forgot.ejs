@@ -22,7 +22,7 @@
           "
         >
           <i class="fas fa-info-circle me-2"></i>
-          Enter your credentials to receive a password reset link on your official email.
+          Enter your details to submit a password reset request.
         </div>
 
         <form id="forgotForm">
@@ -138,17 +138,18 @@
           body: JSON.stringify({ email, employeeId })
         });
 
-        const text = await res.text();
-        console.log("🟢 response:", text);
+       const data = await res.json();
+       console.log("🟢 response:", data);
+       
+       if (res.ok) {
+        alert("✅ " + data.message);
+        form.reset();
+        // captcha refresh
+        document.querySelector(".captcha-display").src ="/auth/captcha?" + Date.now();
+      } else {
+        alert("⚠️ " + data.message);
+      }
 
-        if (res.ok) {
-          alert("✅"+ text);
-          // Optional: clear inputs
-          form.reset();
-          generateForgotCaptcha(); // refresh captcha
-        } else {
-          alert("⚠️ " + text);
-        }
 
       } catch (err) {
         console.error(err);
