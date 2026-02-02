@@ -432,3 +432,71 @@ body {
   .features-grid,
   .footer-top { grid-template-columns: 1fr; }
 }
+
+
+
+
+
+/* BACKDROP */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 38, 84, 0.6); /* AAI deep blue */
+  z-index: 9999;
+}
+
+/* MAIN BOX */
+.aai-modal {
+  width: 70%;
+  max-width: 900px;
+  background: #ffffff;
+  margin: 4% auto;
+  border: 2px solid #0b5ed7;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* HEADER */
+.aai-modal-header {
+  background: linear-gradient(90deg, #0b5ed7, #084298);
+  color: #ffffff;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.aai-modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+  font-size: 28px;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #ffdddd;
+}
+
+/* BODY */
+.aai-modal-body {
+  padding: 20px 24px;
+  max-height: 65vh;
+  overflow-y: auto;
+  color: #1f2937;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.aai-modal-body p {
+  margin-bottom: 16px;
+  text-align: justify;
+}
