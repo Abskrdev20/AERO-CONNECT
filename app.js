@@ -64,7 +64,7 @@ app.use("/grievances", grievanceRoutes);
 const grievanceController = require("./controllers/grievanceController");
 
 app.get("/", grievanceController.getHomeStats);
-
+app.get("/contact", (req, res) => { res.render("contact"); });
 app.use("/admin-auth", adminAuthRoutes);
 app.use("/admin", adminRoutes);
 
@@ -306,7 +306,7 @@ app.get("/test-mail", async (req, res) => {
       from: process.env.EMAIL_USER,
       to: process.env.EMAIL_USER,
       subject: "Test Mail",
-      text: "Agar ye mail aayi, toh nodemailer ka setup successful 🎉",
+      text: "🎉Nodemailer setup successful",
     });
 
     res.send("Mail sent successfully");

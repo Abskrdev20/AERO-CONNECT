@@ -18,14 +18,13 @@ const departmentSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    // ✅ Role ko fields wale object ke andar hi rakha gaya hai
     role: {
       type: String,
       enum: ['DEPARTMENT', 'SUPERADMIN'],
       default: 'DEPARTMENT'
     }
   },
-  { timestamps: true } // ✅ Options (timestamps) alag object mein hain
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Department", departmentSchema);

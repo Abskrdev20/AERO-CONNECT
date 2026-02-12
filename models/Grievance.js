@@ -49,8 +49,6 @@ const grievanceSchema = new mongoose.Schema(
       default: "OPEN",
     },
     isEscalated: { type: Boolean, default: false },
-    escalationReason: { type: String, default: null },
-    escalatedBy: { type: String, default: null },
     escalationDate: { type: Date, default: null },
     departmentComment: { type: String, default: "" }, // Official resolution comment
     forwardingRemark: { type: String, default: "" }, // NEW: Remark added during transfer

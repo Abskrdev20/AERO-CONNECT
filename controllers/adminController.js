@@ -52,8 +52,6 @@ exports.getSuperAdminDashboard = async (req, res) => {
       {
         $set: {
           isEscalated: true,
-          escalationReason: `Automatic Escalation: Unresolved for ${SLA_DAYS}+ days`,
-          escalatedBy: "SYSTEM",
           escalationDate: new Date(),
         },
       },
@@ -203,6 +201,6 @@ exports.forwardGrievance = async (req, res) => {
     res.redirect("/admin/dashboard");
   } catch (err) {
     console.error("Forwarding Error:", err);
-    res.status(500).send("Grievance forward karne mein error aaya.");
+    res.status(500).send("Error occurred in forwarding Grievance");
   }
 };

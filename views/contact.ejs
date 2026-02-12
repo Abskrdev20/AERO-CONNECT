@@ -1,0 +1,92 @@
+<% layout('layouts/boilerplate') -%>
+<link rel="stylesheet" href="/css/contact.css">
+
+<main class="aero-wrapper">
+    <section class="support-section">
+        <div class="section-header">
+            <h2><i class="fa-solid fa-headset"></i> Support Hub</h2>
+            <div class="separator"></div>
+        </div>
+
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="icon-box"><i class="fa-solid fa-phone-volume"></i></div>
+                <div class="card-content">
+                    <h3>24/7 Helpline</h3>
+                    <p>Immediate assistance.</p>
+                    <a href="tel:1800-11-0402" class="contact-link">1800-11-0402</a>
+                </div>
+            </div>
+
+            <div class="contact-card">
+                <div class="icon-box"><i class="fa-solid fa-envelope-open-text"></i></div>
+                <div class="card-content">
+                    <h3>Email Support</h3>
+                    <p>Official queries.</p>
+                    <a href="mailto:support@aai.aero" class="contact-link">support@aai.aero</a>
+                </div>
+            </div>
+
+            <div class="contact-card">
+                <div class="icon-box"><i class="fa-solid fa-location-dot"></i></div>
+                <div class="card-content">
+                    <h3>Headquarters</h3>
+                    <p>Rajiv Gandhi Bhawan</p>
+                    <span class="contact-text">New Delhi - 110003</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="developers-section">
+        <div class="section-header">
+            <h2><i class="fa-solid fa-code"></i> Meet the Developers</h2>
+            <div class="separator"></div>
+        </div>
+
+        <div class="dev-grid">
+            <% 
+                const developers = [
+                    { name: "Jeevidha Arora",  img: "/images/jeevidha.jpeg", github: "https://github.com/Jeevidhaa", linkedin: "https://www.linkedin.com/in/jeevidha-arora-b80a4a306/" },
+                    { name: "Suhani Goel",  img: "/images/suhani_goel.jpg", github: "https://github.com/SUHANIGOEL2006", linkedin: "https://www.linkedin.com/in/suhani-goel-2b1a12278/" },
+                    { name: "Rishi Kumar Yadav", img: "/images/rishi.jpeg", github: "https://github.com/rishi991072", linkedin: "#" },
+                    { name: "Abhishek Kumar", img: "/images/abskr.png", github: "https://github.com/Abskrdev20", linkedin: "https://www.linkedin.com/in/absk-kr/" },
+                    { name: "Ishika Goyal", img: "/images/ishika.jpeg", github: "https://github.com/ishikagoyal9", linkedin: "https://www.linkedin.com/in/ishika-goyal-59a0a8325/" },
+                    { name: "Vritti Garg",  img: "/images/vritti.jpeg", github: "https://github.com/Vritti1215", linkedin: "https://www.linkedin.com/in/vritti-garg-87a197298/" },
+                    { name: "Ruchi Bhalla",  img: "/images/ruchi.jpeg", github: "https://github.com/RuchiBhalla", linkedin: "https://www.linkedin.com/in/ruchi-bhalla-b70851294/" },
+                    { name: "Sakshi",  img: "/images/sakshi.jpeg", github: "https://github.com/Saxshii", linkedin: "https://www.linkedin.com/in/sakshi-8b8a00346" }
+                ];
+            %>
+
+            <% developers.forEach(dev => { %>
+            <div class="dev-card-container">
+                <div class="dev-card-inner">
+                    <div class="dev-card-front">
+                        <div class="avatar-ring">
+                            <img src="<%= dev.img %>" alt="<%= dev.name %>" class="dev-avatar">
+                        </div>
+                        <h3><%= dev.name %></h3>
+                        <div class="front-indicator">
+                            <br>
+                            <i class="fa-solid fa-link fa-spin fa-xl" style="color: #003366;"></i>
+                        </div>
+                    </div>
+
+                    <div class="dev-card-back">
+                        <h3>Connect</h3>
+                        <p>View Profile</p>
+                        <div class="social-links">
+                            <a href="<%= dev.github %>" target="_blank" class="social-btn github">
+                                <i class="fa-brands fa-github"></i>
+                            </a>
+                            <a href="<%= dev.linkedin %>" target="_blank" class="social-btn linkedin">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+    </section>
+</main>
