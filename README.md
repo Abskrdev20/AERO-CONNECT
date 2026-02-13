@@ -14,6 +14,11 @@
 ## 📖 Overview
 
 **AERO-CONNECT** is a comprehensive **inter-departmental grievance redressal portal** built exclusively for the **Airports Authority of India (AAI)**. This unified digital platform empowers employees, interns, and apprentices to **raise**, **track**, and **resolve** workplace grievances with complete **transparency** and **accountability**.
+<p align="center">
+  <a href="https://drive.google.com/file/d/13hOVXx3hiTYCwVhjMOg2PTx5eBvOetdQ/view?usp=sharing" target="_blank">
+    <img src="https://img.shields.io/badge/ 📜 Deep Dive : Explore comprehensive project insights and indepth documentation-View_Report-orange?style=for-the-badge" alt="Project Report" height="32"/>
+  </a>
+</p>
 
 ## ✨ Key Features
 
