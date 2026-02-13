@@ -4,7 +4,7 @@ const path = require("path");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
 
-const User = require("./models/User");
+const User = require("./models/user");
 const Grievance = require("./models/Grievance");
 const Department = require("./models/Department");
 
