@@ -39,7 +39,7 @@ exports.createDepartment = async (req, res) => {
 exports.getSuperAdminDashboard = async (req, res) => {
   try {
     // --- AUTO-ESCALATION LOGIC ---
-    const SLA_DAYS = 20;
+    const SLA_DAYS = 15;
     const thresholdDate = new Date();
     thresholdDate.setDate(thresholdDate.getDate() - SLA_DAYS);
 
