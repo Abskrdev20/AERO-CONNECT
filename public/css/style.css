@@ -203,6 +203,7 @@ body {
 .stat-card {
   text-align: center;
   padding: 20px 20px;
+  margin-bottom: 20px; /* Added to prevent overlapping on mobile */
 }
 
 .stat-number {
@@ -314,31 +315,7 @@ body {
   margin-right: 8px;
 }
 
-/* ===================== RESPONSIVE ===================== */
-@media (max-width: 768px) {
-  .about-grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
-    text-align: center;
-  }
 
-  .about-video {
-    order: -1;
-  }
-
-  .about-content h2 {
-    font-size: 2rem;
-  }
-
-  .about-content p {
-    font-size: 1rem;
-  }
-
-  .about-features {
-    display: inline-block;
-    text-align: left;
-  }
-}
 
 
 /* ===================== FEATURES ===================== */
@@ -350,7 +327,7 @@ body {
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 26px;
 }
 
@@ -422,17 +399,6 @@ body {
   color: #c7d2fe;
 }
 
-/* ===================== RESPONSIVE ===================== */
-@media (max-width: 900px) {
-  .hero { flex-direction: column; padding: 60px 30px; text-align: center; }
-  .hero-buttons { justify-content: center; }
-  .footer-top { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 640px) {
-  .features-grid,
-  .footer-top { grid-template-columns: 1fr; }
-}
-
 
 
 
@@ -499,4 +465,185 @@ body {
 .aai-modal-body p {
   margin-bottom: 16px;
   text-align: justify;
+}
+
+/* ========================================================================= */
+/* FULLY INTEGRATED MEDIA QUERIES                                            */
+/* ========================================================================= */
+
+/* Tablet & Smaller Laptops */
+@media (max-width: 991px) {
+  .hero-content h1 {
+    font-size: 2.8rem;
+  }
+  .brand-title {
+    font-size: 1.25rem;
+  }
+  .aai-modal {
+    width: 85%;
+  }
+}
+
+/* Tablets (Portrait) */
+@media (max-width: 900px) {
+  .hero { 
+    flex-direction: column; 
+    padding: 60px 20px; 
+    text-align: center; 
+    gap: 50px; 
+  }
+  .hero-buttons { 
+    justify-content: center; 
+  }
+  .footer-top { 
+    grid-template-columns: 1fr 1fr; 
+  }
+}
+
+/* Large Mobile / Small Tablets */
+@media (max-width: 768px) {
+  /* About Section Wrap */
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+  .about-video {
+    order: -1; /* Puts the video above the text */
+  }
+  .about-content h2 {
+    font-size: 2rem;
+  }
+  .about-content p {
+    font-size: 1rem;
+  }
+  .about-features {
+    display: inline-block;
+    text-align: left;
+  }
+
+  /* Force Stats into 2x2 Grid */
+  .stats-section .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .stats-section .col-md-3 {
+    flex: 0 0 50%;      
+    max-width: 50%;
+    padding: 10px;      
+  }
+  .stat-number {
+    font-size: 2.5rem;  
+  }
+  .stat-card {
+    padding: 15px 5px;  
+  }
+  .stat-card h6 {
+    font-size: 0.85rem; 
+  }
+}
+
+/* Standard Mobile Phones */
+@media (max-width: 640px) {
+  /* Navbar Alignment Fix */
+  .aai-navbar .container-fluid {
+    flex-wrap: nowrap; 
+  }
+  .navbar-brand {
+    max-width: 75%; 
+    gap: 10px !important; 
+  }
+  .aai-logo {
+    width: 36px;
+    height: 36px;
+  }
+  .brand-title {
+    font-size: 1.05rem; 
+    white-space: normal;
+    line-height: 1.2;
+  }
+  .brand-subtitle {
+    display: none; 
+  }
+
+  /* Hero Content & Buttons */
+  .hero {
+    padding: 40px 15px; 
+    gap: 40px; 
+  }
+  .hero-content h1 { 
+    font-size: 2.2rem; 
+  }
+  .hero-content p {
+    font-size: 1rem;
+  }
+  .hero-buttons { 
+    flex-direction: column; 
+    gap: 15px; 
+  }
+  .btn-primary, .btn-secondary { 
+    width: 100%; 
+    justify-content: center; 
+  }
+
+  /* Fixed Hero Visual Overlap */
+  /* ========================================================================= */
+/* MOBILE ONLY: Fixed Hero Visual Overlap & Icon Spacing                     */
+/* ========================================================================= */
+@media (max-width: 640px) {
+  
+  .hero-visual {
+    position: relative;
+    width: 280px;  /* Safe boundary for mobile screens */
+    height: 280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .solution-card {
+    width: 190px;
+    height: 200px;
+    margin: 0; 
+    position: relative;
+    z-index: 2;
+  }
+  
+  .solution-card::before {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .solution-icon {
+    font-size: 3rem;
+  }
+  
+  .floating-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.1rem;
+    position: absolute;
+    z-index: 3;
+  }
+  .icon-message { 
+    top: 5px; 
+    right: 5px; 
+  }
+  .icon-check { 
+    bottom: 5px; 
+    left: 3px; 
+  }
+
+}
+
+
+  /* Footer & Modals */
+  .footer-top { 
+    grid-template-columns: 1fr; 
+  }
+  .aai-modal {
+    width: 95%;
+    margin: 10% auto;
+  }
 }
